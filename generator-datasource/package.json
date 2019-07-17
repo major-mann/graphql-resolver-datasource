@@ -1,0 +1,16 @@
+{
+    "name": "@major-mann/generator-datasource",
+    "version": "0.0.1",
+    "description": "A generator for datasource projects",
+    "author": "Calvin Mann <calvinmann+npm@gmail.com>",
+    "license": "MIT",
+    "files": [
+        "generators"
+    ],
+    "keywords": [
+        "yeoman-generator"
+    ],
+    "dependencies": {
+        "yeoman-generator": "^4.0.1"
+    }
+}
