@@ -27,8 +27,8 @@ describe(`list`, () => {
     it(`should return all elements after the specified "after"`, () => {
         let result = list(undefined, { }, context);
         result = list(undefined, { after: result.edges[2].cursor }, context);
-        expect(result.edges.length).toBe(2);
-        expect(result.edges[0].node.content).toBe(data[2].content);
+        expect(result.edges.length).toBe(1);
+        expect(result.edges[0].node.content).toBe(data[3].content);
     });
     it(`should return all elements after the specified "before"`, () => {
         let result = list(undefined, { }, context);
@@ -99,7 +99,7 @@ describe(`list`, () => {
         expect(result.edges[4].node.bar).toBe(2);
         expect(result.edges[4].node.content).toBe(`backstreet boys`);
 
-        
+
     });
     it(`should apply all filter instructions to the data`, () => {
         const result = list(undefined, {
@@ -121,7 +121,6 @@ describe(`list`, () => {
         expect(result.pageInfo.hasNextPage).toBe(false);
     });
     it(`should return hasPreviousPage: true when there is another record (in the subset resulting from filter, but not first or after) before the first returned record`, () => {
-        debugger;
         let result = list(undefined, { first: 2, last: 1 }, context);
         expect(result.pageInfo.hasPreviousPage).toBe(true);
         result = list(undefined, { after: result.edges[0].cursor }, context);

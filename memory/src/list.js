@@ -4,7 +4,7 @@ const { elementMatches } = require(`./common.js`);
 
 function createListHandler(key, shape, data) {
     return list;
-    
+
     /**
      * Lists the records applying and supplied order and filter instructions, and optionally paging
      * @param {*} source Unused
@@ -33,7 +33,7 @@ function createListHandler(key, shape, data) {
             context.log.stat.increment(`datasource.memory.list.complete`);
             return emptyConnection();
         }
-    
+
         let result = data.slice().filter(filter);
         order(result, args.order);
 
@@ -46,6 +46,7 @@ function createListHandler(key, shape, data) {
                 hasPreviousPage = true;
                 result.shift();
             }
+            result.shift(); // Remove the matching one
         }
 
         if (args.before) {
@@ -54,7 +55,7 @@ function createListHandler(key, shape, data) {
                 hasNextPage = true;
                 result.pop();
             }
-            result.pop();
+            result.pop(); // Remove the matching one
         }
 
         let first = args.first > 0 ?
@@ -123,25 +124,25 @@ function createListHandler(key, shape, data) {
 
         function order(array, instructions) {
             if (Array.isArray(instructions) && instructions.length) {
-                array.sort(compare);   
-            }        
-        
+                array.sort(compare);
+            }
+
             function compare(a, b) {
                 for (let index = 0; index < instructions.length; index++) {
                     const fieldName = instructions[index].field;
                     const valueA = a[fieldName];
                     const valueB = b[fieldName];
-        
+
                     if (valueA < valueB) {
                         return -1 * desc(instructions[index]);
                     } else if (valueA > valueB) {
                         return 1 * desc(instructions[index]);
                     }
-        
+
                 }
                 return 0;
-            };
-        
+            }
+
             function desc(instruction) {
                 return instruction.desc ?
                     -1 :

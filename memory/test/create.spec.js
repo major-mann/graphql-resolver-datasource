@@ -27,27 +27,16 @@ describe(`create`, () => {
         const result = create(undefined, { input: record }, context);
         expect(result).toEqual(data[0]);
     });
-    it(`should ensure required fields as defined by the shape exist`, () => {
-        const shape = {
-            foo: true,
-            bar: false,
-            baz: {
-                hello: false,
-                world: false
-            }
-        };
+    it(`should auto generated any non supplied id fields`, () => {
+        const shape = { foo: true };
         create = createCreate([`foo`, `bar`], shape, data);
-
-        const input = {
-            bar: 10
-        };
-        expect(() => create(undefined, { input }, context)).toThrow(/required/i);
-        input.foo = 100;
-        expect(() => create(undefined, { input }, context)).not.toThrow(/required/i);
+        create(undefined, { input: { foo: `hello`, bar: `world` } }, context);
+        expect(data[0].foo).toBe(`hello`);
+        expect(!!data[0].bar).toBe(true); // Auto generated
     });
     it(`should only store data that is defined on the shape`, () => {
         const shape = { foo: true };
-        create = createCreate([`foo`, `bar`], shape, data);
+        create = createCreate([`foo`], shape, data);
         create(undefined, { input: { foo: `hello`, bar: `world` } }, context);
         expect(data[0].foo).toBe(`hello`);
         expect(data[0].bar).toBe(undefined);

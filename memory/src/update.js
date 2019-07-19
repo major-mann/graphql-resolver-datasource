@@ -1,6 +1,6 @@
 module.exports = createUpdateHandler;
 
-const { mold, elementMatches } = require(`./common.js`);
+const { select, elementMatches } = require(`./common.js`);
 
 function createUpdateHandler(key, shape, data) {
     return update;
@@ -28,11 +28,11 @@ function createUpdateHandler(key, shape, data) {
         if (index === -1) {
             throw new Error(`Unable to find the document to update with the given input value`);
         }
-        const record = mold({ ...data[index], ...args.input }, shape);
+        const record = select({ ...data[index], ...args.input }, shape);
         data[index] = record;
         context.log.stat.increment(`datasource.memory.update.complete`);
 
         return data[index];
     }
 
-};
+}

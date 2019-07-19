@@ -39,4 +39,4 @@ function createDeleteHandler(key, shape, data) {
         return removed;
     }
 
-};
+}

@@ -1,13 +1,13 @@
 module.exports = {
-    mold,
+    select,
     elementMatches
 };
 
 function elementMatches(key, element, search) {
     return key.every(key => element[key] === search[key]);
-}    
+}
 
-function mold(input, shape) {
+function select(input, shape) {
     if (!shape || typeof shape !== `object`) {
         return input;
     }
@@ -18,13 +18,8 @@ function mold(input, shape) {
 
     const result = {};
     Object.keys(shape).forEach(key => {
-        if (shape[key] === true && input[key] === undefined) {
-            throw new Error(`input is missing required field "${key}"`);
-        } else if (shape[key] && typeof shape[key] === `object`) {
-            if (!input[key] || typeof input[key] !== `object`) {
-                throw new Error(`input field "${key}" MUST be an object`);
-            }
-            result[key] = exec(input[key], shape);            
+        if (shape[key] && typeof shape[key] === `object` && input && typeof input === `object`) {
+            result[key] = select(input[key], shape[key]);
         } else {
             result[key] = input[key];
         }

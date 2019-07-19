@@ -12,7 +12,7 @@ describe(`update`, () => {
         expect(typeof update).toBe(`function`);
     });
     it(`should throw an error if no record to update can be found`, () => {
-        expect(() => update(undefined, { input: { foo: 10, bar: 10, content: 'test' } }, context)).toThrow(/find.*document/i);
+        expect(() => update(undefined, { input: { foo: 10, bar: 10, content: `test` } }, context)).toThrow(/find.*document/i);
     });
     it(`should update any fields supplied in the store`, () => {
         update(undefined, { input: { foo: 1, bar: 1, content: `westlife` } }, context);

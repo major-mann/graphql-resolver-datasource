@@ -18,7 +18,7 @@ function createFindHandler(key, shape, data) {
      */
     function find(source, args, context) {
         context.log.stat.increment(`datasource.memory.find.begin`);
-        
+
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
@@ -33,4 +33,4 @@ function createFindHandler(key, shape, data) {
         return record;
     }
 
-};
+}

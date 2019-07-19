@@ -1,6 +1,6 @@
 module.exports = createCreateHandler;
 
-const { mold } = require(`./common.js`);
+const { select } = require(`./common.js`);
 
 function createCreateHandler(key, shape, data) {
     return create;
@@ -18,16 +18,32 @@ function createCreateHandler(key, shape, data) {
      */
     function create(source, args, context) {
         context.log.stat.increment(`datasource.memory.create.begin`);
-        
+
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
-        
-        const record = mold(args.input, shape);
+
+        const record = select(args.input, shape);
+
+        // Auto generate any key fields that have not been supplied
+        key.forEach(field => generateField(record, field));
+
         data.push(record);
         context.log.stat.increment(`datasource.memory.create.complete`);
-        
+
         return record;
     }
 
-};
+    function generateField(record, field) {
+        if (record[field] === undefined) {
+            record[field] = generateKey();
+        }
+    }
+
+    function generateKey() {
+        return Math.random()
+            .toString(36)
+            .substr(2);
+    }
+
+}

@@ -1,7 +1,7 @@
 module.exports = createUpsertHandler;
 
 const createCreateHandler = require(`./create.js`),
-    { mold, elementMatches } = require(`./common.js`);
+    { select, elementMatches } = require(`./common.js`);
 
 function createUpsertHandler(key, shape, data) {
     const create = createCreateHandler(key, shape, data);
@@ -30,10 +30,10 @@ function createUpsertHandler(key, shape, data) {
         if (index === -1) {
             return create(source, args, context, info);
         } else {
-            const record = mold(args.input, shape);
+            const record = select(args.input, shape);
             data[index] = record;
             return data[index];
         }
     }
 
-};
+}
