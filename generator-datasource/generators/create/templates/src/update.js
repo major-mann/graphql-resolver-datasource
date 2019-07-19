@@ -1,6 +1,6 @@
 module.exports = createUpdateHandler;
 
-const { mold } = require(`./common.js`);
+const { select } = require(`./common.js`);
 
 function createUpdateHandler(key, shape) {
     return update;
@@ -26,7 +26,7 @@ function createUpdateHandler(key, shape) {
 
         let existing, record;
         // TODO: Search implementation goes here.
-        record = mold({ ...existing, ...args.input }, shape);
+        record = select({ ...existing, ...args.input }, shape);
         // TODO: Replace implementation goes here.
 
         // It should throw an error if a document cannot be found

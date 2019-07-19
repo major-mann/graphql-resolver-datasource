@@ -1,6 +1,6 @@
 module.exports = function createListHandler(key, shape) {
     return list;
-    
+
     /**
      * Lists the records applying and supplied order and filter instructions, and optionally paging
      * @param {*} source Unused

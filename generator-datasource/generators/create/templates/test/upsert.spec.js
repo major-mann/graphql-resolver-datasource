@@ -1,26 +1,25 @@
 describe(`upsert`, () => {
-    let createUpsert, upsert, data, context;
+    let createUpsert, upsert, context;
     beforeEach(() => {
         context = require(`./context.js`);
-        jest.mock(`../src/list.js`);
         createUpsert = require(`../src/upsert.js`);
-        data = require(`./data.js`)();
-        upsert = createUpsert([`foo`, `bar`], undefined, data);
+        upsert = createUpsert([`foo`, `bar`], undefined);
     });
 
     it(`should be a function`, () => {
         expect(typeof upsert).toBe(`function`);
     });
-    it(`should create the record if it cannot be found`, () => {
-        const cnt = data.length;
-        upsert(undefined, { input: { foo: 10, bar: 10, content: 'test' } }, context);
-        expect(data.length).toBe(cnt + 1);
-        expect(data[data.length - 1].content).toBe(`test`);
+    it(`should create the record if it cannot be found`, async () => {
+        await upsert(undefined, { input: { foo: 10, bar: 10, content: 'test' } }, context);
+
+        // TODO: Check that the correct data has been created
+        expect(false).toBe(true);
     });
-    it(`should replace the record if it is found`, () => {
-        upsert(undefined, { input: { foo: 2, bar: 1, content: `foo bar` } }, context);
-        expect(data[2].content).toBe(`foo bar`);
-        expect(data[2].aka).toBe(undefined);
+    it(`should replace the record if it is found`, async () => {
+        await upsert(undefined, { input: { foo: 2, bar: 1, content: `foo bar` } }, context);
+
+        // TODO: Check that the correct data has been replaced
+        expect(false).toBe(true);
     });
     it(`should ensure required fields as defined by the shape exist`, () => {
         const shape = {
@@ -31,21 +30,21 @@ describe(`upsert`, () => {
                 world: false
             }
         };
-        upsert = createUpsert([`foo`, `bar`], shape, data);
+        upsert = createUpsert([`foo`, `bar`], shape);
 
         const input = {
             bar: 10
         };
-        expect(() => upsert(undefined, { input }, context)).toThrow(/required/i);
+        expect(upsert(undefined, { input }, context)).rejects.toMatch(/required/i);
         input.foo = 100;
-        expect(() => upsert(undefined, { input }, context)).not.toThrow(/required/i);
+        await upsert(undefined, { input }, context); // Ensure it doesn't throw
     });
     it(`should only store data that is defined on the shape`, () => {
         const shape = { foo: true };
-        upsert = createUpsert([`foo`, `bar`], shape, data);
-        data.length = 0;
+        upsert = createUpsert([`foo`, `bar`], shape);
         upsert(undefined, { input: { foo: 1, bar: 1 } }, context);
-        expect(data[0].foo).toBe(1);
-        expect(data[0].bar).toBe(undefined);
+
+        // TODO: Check that only data defined in the shape has been stored
+        expect(false).toBe(true);
     });
 });

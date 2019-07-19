@@ -2,7 +2,6 @@ describe(`create`, () => {
     let createCreate, create, context;
     beforeEach(() => {
         context = require(`./context.js`);
-        jest.mock(`../src/list.js`);
         createCreate = require(`../src/create.js`);
         create = createCreate([`foo`, `bar`], undefined);
     });
@@ -26,7 +25,7 @@ describe(`create`, () => {
         };
         const result = await create(undefined, { input: record }, context);
         // TODO: Check that result matches the record in the data store
-        expect(false).toBe(true);
+        expect(result).toEqual(true);
     });
     it(`should ensure required fields as defined by the shape exist`, async () => {
         const shape = {
@@ -50,7 +49,7 @@ describe(`create`, () => {
         const shape = { foo: true };
         create = createCreate([`foo`, `bar`], shape, data);
         await create(undefined, { input: { foo: `hello`, bar: `world` } }, context);
-        
+
         // TODO: Check that the record in the data store has the correct values
         expect(false).toBe(true);
     });

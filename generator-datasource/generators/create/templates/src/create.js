@@ -1,6 +1,6 @@
 module.exports = createCreateHandler;
 
-const { mold } = require(`./common.js`);
+const { select } = require(`./common.js`);
 
 function createCreateHandler(key, shape) {
     return create;
@@ -18,17 +18,17 @@ function createCreateHandler(key, shape) {
      */
     async function create(source, args, context) {
         context.log.stat.increment(`datasource.<%= name %>.create.begin`);
-        
+
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
-        
-        let record = mold(args.input, shape);
-        
+
+        let record = select(args.input, shape);
+
         // TODO: Implement create against the underlying data source here
 
         context.log.stat.increment(`datasource.<%= name %>.create.complete`);
-        
+
         // Note: This should be the version that exists in the underlying data store
         return record;
     }

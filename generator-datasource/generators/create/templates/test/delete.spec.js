@@ -2,7 +2,6 @@ describe(`delete`, () => {
     let remove, context;
     beforeEach(() => {
         context = require(`./context.js`);
-        jest.mock(`../src/list.js`);
         const createDelete = require(`../src/delete.js`);
         remove = createDelete([`foo`, `bar`], undefined, data);
     });
