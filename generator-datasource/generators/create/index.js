@@ -45,6 +45,7 @@ module.exports = class extends Generator {
         copyTemplates(`test/`, [
             `.eslintrc`,
             `context.js`,
+            `integration.js`,
             `create.spec.js`,
             `delete.spec.js`,
             `find.spec.js`,

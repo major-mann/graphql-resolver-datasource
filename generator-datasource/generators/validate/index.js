@@ -1,3 +1,4 @@
+const path = require(`path`);
 const Generator = require(`yeoman-generator`);
 const chalk = require(`chalk`);
 const { PathPrompt } = require(`inquirer-path`);
@@ -22,10 +23,17 @@ module.exports = class extends Generator {
         this.env.adapter.promptModule.registerPrompt(`path`, PathPrompt);
     }
     async prompting() {
+        // TODO: Want to be able to select "explain" which will explain how to built a test file
+        // Currently we only implement "validate"
+
+        if (this.options && this.options.path) {
+            this.options.path = path.resolve(process.cwd(), this.options.path);
+        }
+
         this.answers = this.options;
         const prompts = [
             {
-                type: `input`,
+                type: `path`,
                 name: `path`,
                 message: `Select the file to execute against`
             }
@@ -34,17 +42,7 @@ module.exports = class extends Generator {
     }
 
     async writing() {
-
-        const key = [`entertainerId`];
-
-        const shape = {
-            entertainerId: true,
-            name: true,
-            movies: true,
-            nickname: true
-        };
-
-        this.resolvers = require(this.answers.path)(key, shape);
+        this.resolvers = require(this.answers.path)();
 
         const source = {};
         const info = {};
