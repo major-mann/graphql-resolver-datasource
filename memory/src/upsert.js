@@ -20,8 +20,6 @@ function createUpsertHandler(key, shape, data) {
      * @throws When args.input is not an object, or when shape is supplied and args.input does not match it
      */
     function upsert(source, args, context, info) {
-        context.log.stat.increment(`datasource.memory.upsert`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }

@@ -27,10 +27,8 @@ function createListHandler(key, shape, data) {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     function list(source, args, context) {
-        context.log.stat.increment(`datasource.memory.list.begin`);
         if (args.first <= 0 || args.last <= 0) {
             context.log.stat.gauge(`datasource.memory.list.count`, 0);
-            context.log.stat.increment(`datasource.memory.list.complete`);
             return emptyConnection();
         }
 
@@ -93,8 +91,6 @@ function createListHandler(key, shape, data) {
         };
 
         context.log.stat.gauge(`datasource.memory.list.count`, result.length);
-        context.log.stat.increment(`datasource.memory.list.complete`);
-
         return connection;
 
         function filter(element) {

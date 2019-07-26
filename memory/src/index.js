@@ -19,7 +19,7 @@ function createMemoryDatasource(key, shape, data) {
         shape = undefined;
     }
 
-    return {
+    const resolvers = {
         find: createFindHandler(key, shape, data),
         list: createListHandler(key, shape, data),
         create: createCreateHandler(key, shape, data),
@@ -27,4 +27,28 @@ function createMemoryDatasource(key, shape, data) {
         update: createUpdateHandler(key, shape, data),
         delete: createDeleteHandler(key, shape, data)
     };
+    return Object.keys(resolvers).reduce((result, name) => {
+        result[name] = statsWrap(name, resolvers[name]);
+        return result;
+    }, {});
+
+    function statsWrap(name, resolver) {
+        const beginStatName = `datasource.memory.${name}.begin`;
+        const completeStatName = `datasource.memory.${name}.complete`;
+        const failStatName = `datasource.memory.${name}.fail`;
+        const timingStatName = `datasource.memory.${name}.time`;
+        return async function timeExecution(source, args, context, info) {
+            const executionStart = Date.now();
+            context.log.stat.increment(beginStatName);
+            try {
+                const result = await resolver(source, args, context, info);
+                context.log.stat.increment(completeStatName);
+                context.log.stat.timing(timingStatName, executionStart);
+                return result;
+            } catch (ex) {
+                context.log.stat.increment(failStatName);
+                throw ex;
+            }
+        };
+    }
 }

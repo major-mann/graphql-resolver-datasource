@@ -17,20 +17,15 @@ function createCreateHandler(key, shape, data) {
      * @throws When args.input is not an object, or when shape is supplied and args.input does not match it
      */
     function create(source, args, context) {
-        context.log.stat.increment(`datasource.memory.create.begin`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
 
         const record = select(args.input, shape);
-
         // Auto generate any key fields that have not been supplied
         key.forEach(field => generateField(record, field));
 
         data.push(record);
-        context.log.stat.increment(`datasource.memory.create.complete`);
-
         return record;
     }
 

@@ -18,8 +18,6 @@ function createUpdateHandler(key, shape, data) {
      *         args.input combined with the existing data does not match it
      */
     function update(source, args, context) {
-        context.log.stat.increment(`datasource.memory.update.begin`);
-
         if (!args.input) {
             throw new Error(`No input value supplied in args`);
         }
@@ -30,8 +28,6 @@ function createUpdateHandler(key, shape, data) {
         }
         const record = select({ ...data[index], ...args.input }, shape);
         data[index] = record;
-        context.log.stat.increment(`datasource.memory.update.complete`);
-
         return data[index];
     }
 

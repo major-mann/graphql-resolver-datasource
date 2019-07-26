@@ -17,8 +17,6 @@ function createDeleteHandler(key, shape, data) {
      * @throws When args.input is not an object
      */
     function remove(source, args, context) {
-        context.log.stat.increment(`datasource.memory.delete.begin`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
@@ -34,8 +32,6 @@ function createDeleteHandler(key, shape, data) {
         } else {
             context.log.stat.increment(`datasource.memory.delete.missing`);
         }
-        context.log.stat.increment(`datasource.memory.delete.complete`);
-
         return removed;
     }
 

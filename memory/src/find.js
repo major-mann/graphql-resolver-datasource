@@ -17,20 +17,18 @@ function createFindHandler(key, shape, data) {
      * @throws When args.input is not an object
      */
     function find(source, args, context) {
-        context.log.stat.increment(`datasource.memory.find.begin`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
-
+        if (key.some(k => args.input[k] === undefined)) {
+            throw new Error(`All key fields must be supplied to find (${key.join(`, `)})`);
+        }
         const record = data.find(element => elementMatches(key, element, args.input));
         if (record) {
             context.log.stat.increment(`datasource.memory.find.found`);
         } else {
             context.log.stat.increment(`datasource.memory.find.missing`);
         }
-        context.log.stat.increment(`datasource.memory.find.complete`);
         return record;
     }
-
 }
