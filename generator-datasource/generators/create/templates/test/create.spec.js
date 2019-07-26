@@ -3,7 +3,7 @@ describe(`create`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         createCreate = require(`../src/create.js`);
-        create = createCreate([`foo`, `bar`], undefined);
+        create = createCreate();
     });
 
     it(`should be a function`, () => {
@@ -24,33 +24,6 @@ describe(`create`, () => {
             bar: 1
         };
         const result = await create(undefined, { input: record }, context);
-        // TODO: Check that result matches the record in the data store
-        expect(result).toEqual(true);
-    });
-    it(`should ensure required fields as defined by the shape exist`, async () => {
-        const shape = {
-            foo: true,
-            bar: false,
-            baz: {
-                hello: false,
-                world: false
-            }
-        };
-        create = await createCreate([`foo`, `bar`], shape, data);
-
-        const input = {
-            bar: 10
-        };
-        await expect(create(undefined, { input }, context)).rejects.toMatch(/required/i);
-        input.foo = 100;
-        await create(undefined, { input }, context);
-    });
-    it(`should only store data that is defined on the shape`, async () => {
-        const shape = { foo: true };
-        create = createCreate([`foo`, `bar`], shape, data);
-        await create(undefined, { input: { foo: `hello`, bar: `world` } }, context);
-
-        // TODO: Check that the record in the data store has the correct values
-        expect(false).toBe(true);
+        expect(result).toEqual(record);
     });
 });

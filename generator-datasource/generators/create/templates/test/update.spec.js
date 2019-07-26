@@ -3,7 +3,7 @@ describe(`update`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         createUpdate = require(`../src/update.js`);
-        update = createUpdate([`foo`, `bar`], undefined);
+        update = createUpdate();
     });
 
     it(`should be a function`, () => {

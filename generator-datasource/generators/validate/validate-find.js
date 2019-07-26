@@ -35,11 +35,14 @@ async function createFindValidator(resolvers, source, context, info) {
         }, context, info);
         cleanup.push(document3.entertainerId);
 
+        let succeeded = false;
         try {
             await resolvers.find(source, { input: { name: `Michael Cain` } }, context, info);
+            succeeded = true;
         } catch (ex) {
-            assert.fail(`Expected find to fail when the key fields are not supplied`);
+            // Expected failure
         }
+        assert(!succeeded, `Expected find to fail when the key fields are not supplied`);
 
         const findResult1 = await resolvers.find(
             source,

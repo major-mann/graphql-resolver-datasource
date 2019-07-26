@@ -17,10 +17,10 @@ module.exports = class extends Generator {
 
     async writing() {
         const self = this;
-        const package = JSON.parse(this.fs.read(this.templatePath(`package.json`), { encoding: `utf8` }));
+        const packageJson = JSON.parse(this.fs.read(this.templatePath(`package.json`), { encoding: `utf8` }));
         const [latest, devLatest] = await Promise.all([
-            loadLatest(package.dependencies),
-            loadLatest(package.devDependencies)
+            loadLatest(packageJson.dependencies),
+            loadLatest(packageJson.devDependencies)
         ]);
 
         this.answers.latest = latest;
@@ -32,7 +32,6 @@ module.exports = class extends Generator {
         ]);
 
         copyTemplates(`src/`, [
-            `common.js`,
             `create.js`,
             `delete.js`,
             `find.js`,
@@ -67,11 +66,11 @@ module.exports = class extends Generator {
             if (obj) {
                 const result = {};
                 await Promise.all(Object.keys(obj).map(async name => {
-                    result[name] = await this.findLatest(name);
+                    result[name] = await self.findLatest(name);
                 }));
                 return result;
             } else {
-                return undefined;
+                return {};
             }
         }
     }

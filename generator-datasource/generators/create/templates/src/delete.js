@@ -1,4 +1,4 @@
-module.exports = function createDeleteHandler(key, shape) {
+module.exports = function createDeleteHandler() {
     return remove;
 
     /**
@@ -13,8 +13,6 @@ module.exports = function createDeleteHandler(key, shape) {
      * @throws When args.input is not an object
      */
     async function remove(source, args, context) {
-        context.log.stat.increment(`datasource.<%= name %>.delete.begin`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
@@ -28,7 +26,6 @@ module.exports = function createDeleteHandler(key, shape) {
         } else {
             context.log.stat.increment(`datasource.<%= name %>.delete.missing`);
         }
-        context.log.stat.increment(`datasource.<%= name %>.delete.complete`);
         return removed;
     }
 

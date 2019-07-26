@@ -3,7 +3,7 @@ describe(`list`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         createList = require(`../src/list.js`);
-        list = createList([`foo`, `bar`], undefined);
+        list = createList();
     });
 
     it(`should be a function`, () => {

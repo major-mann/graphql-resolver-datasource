@@ -3,8 +3,7 @@ describe(`find`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         const createFind = require(`../src/find.js`);
-        const data = require(`./data.js`)();
-        find = createFind([`foo`, `bar`], undefined, data);
+        find = createFind();
     });
 
     it(`should be a function`, () => {

@@ -1,4 +1,4 @@
-module.exports = function createListHandler(key, shape) {
+module.exports = function createListHandler() {
     return list;
 
     /**
@@ -23,7 +23,6 @@ module.exports = function createListHandler(key, shape) {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
-        context.log.stat.increment(`datasource.<%= name %>.list.begin`);
         if (args.first <= 0 || args.last <= 0) {
             context.log.stat.gauge(`datasource.<%= name %>.list.count`, 0);
             context.log.stat.increment(`datasource.<%= name %>.list.complete`);
@@ -42,8 +41,6 @@ module.exports = function createListHandler(key, shape) {
         };
 
         context.log.stat.gauge(`datasource.<%= name %>.list.count`, result.length);
-        context.log.stat.increment(`datasource.<%= name %>.list.complete`);
-
         return connection;
     }
 
@@ -56,16 +53,16 @@ module.exports = function createListHandler(key, shape) {
     }
 
     function createCursor(node) {
-        const data = key.reduce((result, fieldName) => {
-            result[fieldName] = node[fieldName];
-            return result;
-        }, {});
-        return Buffer.from(JSON.stringify(data), `utf8`).toString(`base64`);
+        // TODO: Create a representation of the record here and return it
+        //  as a string
+        return ``;
     }
 
     function decodeCursor(cursor) {
-        const data = JSON.parse(Buffer.from(cursor, `base64`).toString(`utf8`));
-        return data;
+        // TODO: Decode the data from createCursor into something usable....
+        // const data = JSON.parse(Buffer.from(cursor, `base64`).toString(`utf8`));
+        // return data;
+        return undefined;
     }
 
     function emptyConnection() {

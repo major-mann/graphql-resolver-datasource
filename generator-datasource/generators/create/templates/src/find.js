@@ -1,4 +1,4 @@
-module.exports = function createFindHandler(key, shape) {
+module.exports = function createFindHandler() {
     return find;
 
     /**
@@ -13,8 +13,6 @@ module.exports = function createFindHandler(key, shape) {
      * @throws When args.input is not an object
      */
     async function find(source, args, context) {
-        context.log.stat.increment(`datasource.<%= name %>.find.begin`);
-
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }
@@ -28,7 +26,6 @@ module.exports = function createFindHandler(key, shape) {
         } else {
             context.log.stat.increment(`datasource.<%= name %>.find.missing`);
         }
-        context.log.stat.increment(`datasource.<%= name %>.find.complete`);
         return record;
     }
 

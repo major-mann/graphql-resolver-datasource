@@ -3,7 +3,7 @@ describe(`delete`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         const createDelete = require(`../src/delete.js`);
-        remove = createDelete([`foo`, `bar`], undefined, data);
+        remove = createDelete();
     });
 
     it(`should be a function`, () => {

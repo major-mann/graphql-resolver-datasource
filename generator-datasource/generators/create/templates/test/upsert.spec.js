@@ -3,7 +3,7 @@ describe(`upsert`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         createUpsert = require(`../src/upsert.js`);
-        upsert = createUpsert([`foo`, `bar`], undefined);
+        upsert = createUpsert();
     });
 
     it(`should be a function`, () => {
