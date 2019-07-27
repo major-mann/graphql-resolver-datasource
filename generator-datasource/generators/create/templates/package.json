@@ -1,5 +1,5 @@
 {
-    "name": "@major-mann/datasource-<%= name %>",
+    "name": "@major-mann/graphql-resolver-datasource-<%= name %>",
     "version": "0.0.1",
     "description": "A collection of data resolvers backed by <%= name %>",
     "main": "src/index.js",

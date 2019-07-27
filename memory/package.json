@@ -1,5 +1,5 @@
 {
-    "name": "@major-mann/datasource-memory",
+    "name": "@major-mann/graphql-resolver-datasource-memory",
     "version": "0.0.1",
     "description": "A collection of in memory data resolvers",
     "main": "src/index.js",
