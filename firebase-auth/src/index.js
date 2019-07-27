@@ -1,13 +1,21 @@
 module.exports = createFirebaseAuthDatasource;
 
-const createCreateHandler = require(`./create.js`),
+const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
+    createAuthenticateHandler = require(`./authenticate.js`),
+    createVerifyTokenHandler = require(`./verify-token.js`),
+    createCreateHandler = require(`./create.js`),
     createUpsertHandler = require(`./upsert.js`),
     createUpdateHandler = require(`./update.js`),
     createDeleteHandler = require(`./delete.js`),
     createFindHandler = require(`./find.js`),
-    createListHandler = require(`./list.js`);
+    createListHandler = require(`./list.js`),
+    createRestClient = require(`./rest.js`);
 
-function createFirebaseAuthDatasource(auth) {
+function createFirebaseAuthDatasource(auth, apiKey) {
+    const rest = createRestClient(apiKey);
+    const authenticate = createAuthenticateHandler(rest);
+    const verifyToken = createVerifyTokenHandler(auth, rest);
+    const refreshIdToken = createRefreshIdTokenHandler(rest);
     const find = createFindHandler(auth);
     const create = createCreateHandler(auth);
     const update = createUpdateHandler(auth);
@@ -15,6 +23,9 @@ function createFirebaseAuthDatasource(auth) {
         find,
         create,
         update,
+        verifyToken,
+        authenticate,
+        refreshIdToken,
         list: createListHandler(auth),
         delete: createDeleteHandler(auth, find),
         upsert: createUpsertHandler(find, create, update)
