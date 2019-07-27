@@ -13,6 +13,10 @@ module.exports = function createAuthenticateHandler(rest) {
         let tokenData;
         if (typeof args.email === `string` && typeof args.password === `string`) {
             tokenData = await rest.verifyPassword(args.email, args.password);
+            if (tokenData) {
+                tokenData.userId = tokenData.localId;
+                delete tokenData.localId;
+            }
         } else if (typeof args.token === `string`) {
             tokenData = await rest.verifyCustomToken(args.token);
         } else {
