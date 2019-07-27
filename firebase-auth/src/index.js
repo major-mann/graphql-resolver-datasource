@@ -15,6 +15,7 @@ const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
 function createFirebaseAuthDatasource(auth, apiKey) {
     const rest = createRestClient(apiKey);
     const authenticate = createAuthenticateHandler(rest);
+    const revokeToken = createRevokeTokenHandler(auth, rest);
     const verifyToken = createVerifyTokenHandler(auth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
     const find = createFindHandler(auth);
@@ -24,6 +25,7 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         find,
         create,
         update,
+        revokeToken,
         verifyToken,
         authenticate,
         refreshIdToken,
