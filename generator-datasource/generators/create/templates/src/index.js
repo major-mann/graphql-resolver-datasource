@@ -18,7 +18,7 @@ function create<%= capitalizedName %>Datasource() {
     };
 
     return Object.keys(resolvers).reduce((result, name) => {
-        result[name] = statsWrap(name, result[name]);
+        result[name] = statsWrap(name, resolvers[name]);
         return result;
     }, {});
 
