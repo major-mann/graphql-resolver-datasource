@@ -3,6 +3,7 @@ module.exports = createFirebaseAuthDatasource;
 const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
     createAuthenticateHandler = require(`./authenticate.js`),
     createVerifyTokenHandler = require(`./verify-token.js`),
+    createRevokeTokenHandler = require(`./revoke-token.js`),
     createCreateHandler = require(`./create.js`),
     createUpsertHandler = require(`./upsert.js`),
     createUpdateHandler = require(`./update.js`),
