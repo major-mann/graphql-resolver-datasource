@@ -40,7 +40,7 @@ async function createListValidator(resolvers, source, context, info) {
         cleanup.push(document4.uid);
 
         // Check no paging or filters
-        const results1 = await resolvers.list(source, { }, context, info);
+        const results1 = await resolvers.list(source, { input: { } }, context, info);
         assert.equal(results1.edges.length, 4);
         assert.equal(results1.edges[0].node.uid, `clint-eastwood`);
         assert.equal(results1.edges[1].node.uid, `leonardo-dicaprio`);
@@ -49,7 +49,9 @@ async function createListValidator(resolvers, source, context, info) {
 
         // Check after
         const results2 = await resolvers.list(source, {
-            after: results1.edges[0].cursor
+            input: {
+                after: results1.edges[0].cursor
+            }
         }, context, info);
         assert.equal(results2.edges.length, 3, `Expected after to filter any records from the start until it matched one, ` +
             `the incorrect number of records was returned. Expected ${results2.edges.length} == 3`);
@@ -61,7 +63,9 @@ async function createListValidator(resolvers, source, context, info) {
 
         // Check first
         const results5 = await resolvers.list(source, {
-            first: 2
+            input: {
+                first: 2
+            }
         }, context, info);
         assert.equal(results5.edges.length, 2);
         assert.equal(results5.edges[0].node.uid, `clint-eastwood`);
@@ -71,8 +75,10 @@ async function createListValidator(resolvers, source, context, info) {
 
         // Check first bigger than last
         const results7 = await resolvers.list(source, {
-            first: 3,
-            last: 2
+            input: {
+                first: 3,
+                last: 2
+            }
         }, context, info);
         assert.equal(results7.edges.length, 2);
         assert.equal(results7.edges[0].node.uid, `leonardo-dicaprio`);
@@ -82,8 +88,10 @@ async function createListValidator(resolvers, source, context, info) {
 
         // Check after with first
         const results9 = await resolvers.list(source, {
-            after: results1.edges[0].cursor,
-            first: 2
+            input: {
+                after: results1.edges[0].cursor,
+                first: 2
+            }
         }, context, info);
         assert.equal(
             results9.edges.length,
@@ -99,9 +107,11 @@ async function createListValidator(resolvers, source, context, info) {
 
         // Check after with first bigger than last
         const results11 = await resolvers.list(source, {
-            after: results1.edges[0].cursor,
-            first: 3,
-            last: 2
+            input: {
+                after: results1.edges[0].cursor,
+                first: 3,
+                last: 2
+            }
         }, context, info);
         assert.equal(
             results11.edges.length,

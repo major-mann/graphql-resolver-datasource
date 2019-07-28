@@ -31,6 +31,6 @@ describe(`delete`, () => {
     });
     it(`should return removed record`, async () => {
         const removed = await remove(undefined, { input: { foo: 1, bar: 2 } }, context);
-        expect(removed).toBe(docResult);
+        expect(removed).toBe(docData);
     });
 });

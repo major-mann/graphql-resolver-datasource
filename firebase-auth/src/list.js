@@ -9,17 +9,17 @@ function createListHandler(auth, find) {
      * Lists the records applying and supplied order and filter instructions, and optionally paging
      * @param {*} source Unused
      * @param {object} args The arguments to use to determine what to list
-     * @param {number} args.first Limit the returned number of records from the start
-     * @param {number} args.last Limit the returned number of records from the end
-     * @param {string} args.after Only return records that come after the specified value
-     * @param {string} args.before Only return records that come before the specified value
-     * @param {array} args.order The array of order instructions
-     * @param {string} args.order.field The field the order instruction applies to
-     * @param {boolean} args.order.desc Whether the field should be ordered descending
-     * @param {array} args.filter The array of filter instructions
-     * @param {string} args.filter.field The field the filter should be applied to
-     * @param {string} args.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
-     * @param {string} args.filter.value The value the comparison should be made from (values will be coalesced)
+     * @param {number} args.input.first Limit the returned number of records from the start
+     * @param {number} args.input.last Limit the returned number of records from the end
+     * @param {string} args.input.after Only return records that come after the specified value
+     * @param {string} args.input.before Only return records that come before the specified value
+     * @param {array} args.input.order The array of order instructions
+     * @param {string} args.input.order.field The field the order instruction applies to
+     * @param {boolean} args.input.order.desc Whether the field should be ordered descending
+     * @param {array} args.input.filter The array of filter instructions
+     * @param {string} args.input.filter.field The field the filter should be applied to
+     * @param {string} args.input.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
+     * @param {string} args.input.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
      * @param {object} context.log.stat The stats object
@@ -27,32 +27,31 @@ function createListHandler(auth, find) {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
-        if (args.first <= 0 || args.last <= 0) {
+        const { first, last, after, before, filter, order } = args.input;
+        if (first <= 0 || last <= 0) {
             context.log.stat.gauge(`datasource.firebase-auth.list.count`, 0);
             context.log.stat.increment(`datasource.firebase-auth.list.complete`);
             return emptyConnection();
         }
 
-        if (args.before || args.first > 0 === false && args.last > 0 || args.last > args.first) {
+        if (before || first > 0 === false && last > 0 || last > first) {
             throw new Error(`firebase auth list does not support accessing data from the tail`);
         }
-        if (args.order && args.order.length) {
+        if (order && order.length) {
             throw new Error(`Auth service user listing does not support ordering`);
         }
 
         const limit = calculateLimit();
         if (limit > LIMIT) {
             throw new Error(`The maximum number of records that can be requested (using first and last) ` +
-                `is ${LIMIT}. Received ${limit} (first: ${args.first}. last: ${args.last})`);
+                `is ${LIMIT}. Received ${limit} (first: ${first}. last: ${last})`);
         }
 
-        if (args.after) {
-            args.after = deserializeCursor(args.after);
-        }
-        if (args.after && args.after.field || args.filter && args.filter.length) {
-            return pseudoList(args.after);
+        const afterValue = after && deserializeCursor(after);
+        if (afterValue && afterValue.field || filter && filter.length) {
+            return pseudoList(afterValue);
         } else {
-            return standardList(args.after);
+            return standardList(afterValue);
         }
 
         async function standardList(cursor) {
@@ -77,8 +76,8 @@ function createListHandler(auth, find) {
                 }
             }
 
-            if (args.last > 0) {
-                users = users.slice(Math.max(users.length - args.last, 0));
+            if (last > 0) {
+                users = users.slice(Math.max(users.length - last, 0));
             }
 
             return buildResult(users);
@@ -90,7 +89,7 @@ function createListHandler(auth, find) {
                             .map(buildEdge)
                             .filter(e => e),
                         pageInfo: {
-                            hasPreviousPage: Boolean(cursor) || args.last > 0,
+                            hasPreviousPage: Boolean(cursor) || last > 0,
                             hasNextPage: Boolean(listResult.pageToken) || hasNextPage
                         }
                     };
@@ -121,19 +120,19 @@ function createListHandler(auth, find) {
         }
 
         async function pseudoList(cursor) {
-            args.filter.forEach(validateFieldOperation);
+            filter.forEach(validateFieldOperation);
             let current, users;
 
             if (cursor) {
                 users = [await lookup(cursor.field, cursor.value)];
             } else {
-                current = args.filter.shift();
+                current = filter.shift();
                 users = [await lookup(current.field, current.value)];
             }
 
             // If we have additional, make sure all filters match the user
-            while (args.filter.length && users.length) {
-                current = args.filter.shift();
+            while (filter.length && users.length) {
+                current = filter.shift();
                 users = users.filter(user => user[current.field] === current.value);
             }
             return buildResult(users);
@@ -218,12 +217,12 @@ function createListHandler(auth, find) {
         }
 
         function calculateLimit() {
-            if (args.first >=0 && args.last >= 0) {
-                return Math.max(args.first, args.last);
-            } else if (args.first >= 0) {
-                return args.first;
-            } else if (args.last >= 0) {
-                return args.last;
+            if (first >=0 && last >= 0) {
+                return Math.max(first, last);
+            } else if (first >= 0) {
+                return first;
+            } else if (last >= 0) {
+                return last;
             } else {
                 return LIMIT;
             }

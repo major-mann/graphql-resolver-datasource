@@ -4,18 +4,18 @@ module.exports = function createListHandler() {
     /**
      * Lists the records applying and supplied order and filter instructions, and optionally paging
      * @param {*} source Unused
-     * @param {object} args The arguments to use to determine what to list
-     * @param {number} args.first Limit the returned number of records from the start
-     * @param {number} args.last Limit the returned number of records from the end
-     * @param {string} args.after Only return records that come after the specified value
-     * @param {string} args.before Only return records that come before the specified value
-     * @param {array} args.order The array of order instructions
-     * @param {string} args.order.field The field the order instruction applies to
-     * @param {boolean} args.order.desc Whether the field should be ordered descending
-     * @param {array} args.filter The array of filter instructions
-     * @param {string} args.filter.field The field the filter should be applied to
-     * @param {string} args.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
-     * @param {string} args.filter.value The value the comparison should be made from (values will be coalesced)
+     * @param {object} args.input The arguments to use to determine what to list
+     * @param {number} args.input.first Limit the returned number of records from the start
+     * @param {number} args.input.last Limit the returned number of records from the end
+     * @param {string} args.input.after Only return records that come after the specified value
+     * @param {string} args.input.before Only return records that come before the specified value
+     * @param {array} args.input.order The array of order instructions
+     * @param {string} args.input.order.field The field the order instruction applies to
+     * @param {boolean} args.input.order.desc Whether the field should be ordered descending
+     * @param {array} args.input.filter The array of filter instructions
+     * @param {string} args.input.filter.field The field the filter should be applied to
+     * @param {string} args.input.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
+     * @param {string} args.input.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
      * @param {object} context.log.stat The stats object
@@ -23,7 +23,7 @@ module.exports = function createListHandler() {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
-        if (args.first <= 0 || args.last <= 0) {
+        if (args.input.first <= 0 || args.input.last <= 0) {
             context.log.stat.gauge(`datasource.<%= name %>.list.count`, 0);
             context.log.stat.increment(`datasource.<%= name %>.list.complete`);
             return emptyConnection();

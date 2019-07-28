@@ -29,8 +29,8 @@ function createListHandler(collection, createKey) {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
-        const isTailQuery = args.last > args.first ||
-            args.first >= 0 === false && args.last > 0;
+        const isTailQuery = args.input.last > args.input.first ||
+            args.input.first >= 0 === false && args.input.last > 0;
 
         // Get the arguments we are interested in for easy access
         const { filter, order, before, after, first, last } = extractArgs(args, isTailQuery);
@@ -216,9 +216,9 @@ function createListHandler(collection, createKey) {
 
     function extractArgs(args, isTailQuery) {
         if (!isTailQuery) {
-            return args;
+            return args.input;
         }
-        const { filter, order, before, after, first, last } = args;
+        const { filter, order, before, after, first, last } = args.input;
 
         const reversedOrder = order && order.map(ord => ({
             ...ord,

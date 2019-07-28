@@ -9,17 +9,17 @@ function createListHandler(key, shape, data) {
      * Lists the records applying and supplied order and filter instructions, and optionally paging
      * @param {*} source Unused
      * @param {object} args The arguments to use to determine what to list
-     * @param {number} args.first Limit the returned number of records from the start
-     * @param {number} args.last Limit the returned number of records from the end
-     * @param {string} args.after Only return records that come after the specified value
-     * @param {string} args.before Only return records that come before the specified value
-     * @param {array} args.order The array of order instructions
-     * @param {string} args.order.field The field the order instruction applies to
-     * @param {boolean} args.order.desc Whether the field should be ordered descending
-     * @param {array} args.filter The array of filter instructions
-     * @param {string} args.filter.field The field the filter should be applied to
-     * @param {string} args.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
-     * @param {string} args.filter.value The value the comparison should be made from (values will be coalesced)
+     * @param {number} args.input.first Limit the returned number of records from the start
+     * @param {number} args.input.last Limit the returned number of records from the end
+     * @param {string} args.input.after Only return records that come after the specified value
+     * @param {string} args.input.before Only return records that come before the specified value
+     * @param {array} args.input.order The array of order instructions
+     * @param {string} args.input.order.field The field the order instruction applies to
+     * @param {boolean} args.input.order.desc Whether the field should be ordered descending
+     * @param {array} args.input.filter The array of filter instructions
+     * @param {string} args.input.filter.field The field the filter should be applied to
+     * @param {string} args.input.filter.op The operation (One of: LT, LTE, EQ, GTE, GT, CONTAINS)
+     * @param {string} args.input.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
      * @param {object} context.log.stat The stats object
@@ -27,19 +27,20 @@ function createListHandler(key, shape, data) {
      * @param {object} context.log.stat.gauge The stat function to monitor values over time
      */
     function list(source, args, context) {
-        if (args.first <= 0 || args.last <= 0) {
+        const { first, last, after, before, filter, order } = args.input;
+        if (first <= 0 || last <= 0) {
             context.log.stat.gauge(`datasource.memory.list.count`, 0);
             return emptyConnection();
         }
 
-        let result = data.slice().filter(filter);
-        order(result, args.order);
+        let result = data.slice().filter(filterElement);
+        orderArray(result, order);
 
         let hasPreviousPage = false,
             hasNextPage = false;
 
-        if (args.after) {
-            const cursor = decodeCursor(args.after);
+        if (after) {
+            const cursor = decodeCursor(after);
             while (result.length && !elementMatches(key, result[0], cursor)) {
                 hasPreviousPage = true;
                 result.shift();
@@ -47,8 +48,8 @@ function createListHandler(key, shape, data) {
             result.shift(); // Remove the matching one
         }
 
-        if (args.before) {
-            const cursor = decodeCursor(args.before);
+        if (before) {
+            const cursor = decodeCursor(before);
             while (result.length && !elementMatches(key, result[result.length - 1], cursor)) {
                 hasNextPage = true;
                 result.pop();
@@ -56,33 +57,33 @@ function createListHandler(key, shape, data) {
             result.pop(); // Remove the matching one
         }
 
-        let first = args.first > 0 ?
-            args.first :
+        const saneFirst = first > 0 ?
+            first :
             undefined;
-        let last = args.last > 0 ?
-            args.last :
+        const saneLast = last > 0 ?
+            last :
             undefined;
 
-        if (first < last) {
+        if (saneFirst < saneLast) {
             hasNextPage = true;
-            hasPreviousPage = hasPreviousPage || last < data.length;
-            const spliceSize = Math.min(first, result.length - last);
+            hasPreviousPage = hasPreviousPage || saneLast < data.length;
+            const spliceSize = Math.min(saneFirst, result.length - saneLast);
             result.splice(0, spliceSize);
-            result = result.slice(0, first);
-        } else if (first > last) {
+            result = result.slice(0, saneFirst);
+        } else if (saneFirst > saneLast) {
             hasPreviousPage = true;
-            hasNextPage = hasNextPage || first < data.length;
-            const spliceSize = Math.min(last, result.length - first);
+            hasNextPage = hasNextPage || saneFirst < data.length;
+            const spliceSize = Math.min(saneLast, result.length - saneFirst);
             result.splice(result.length - spliceSize);
-            result = result.slice(result.length - last);
-        } else if (first > 0) {
+            result = result.slice(result.length - saneLast);
+        } else if (saneFirst > 0) {
             hasPreviousPage = hasPreviousPage || false;
-            hasNextPage = hasNextPage || first < data.length;
-            result.splice(first);
-        } else if (last > 0) {
+            hasNextPage = hasNextPage || saneFirst < data.length;
+            result.splice(saneFirst);
+        } else if (saneLast > 0) {
             hasNextPage = hasNextPage || false;
-            hasPreviousPage = hasPreviousPage || last < data.length;
-            result = result.slice(result.length - last);
+            hasPreviousPage = hasPreviousPage || saneLast < data.length;
+            result = result.slice(result.length - saneLast);
         }
 
         const connection = {
@@ -93,11 +94,11 @@ function createListHandler(key, shape, data) {
         context.log.stat.gauge(`datasource.memory.list.count`, result.length);
         return connection;
 
-        function filter(element) {
-            if (!Array.isArray(args.filter) || !args.filter.length) {
+        function filterElement(element) {
+            if (!Array.isArray(filter) || !filter.length) {
                 return true;
             }
-            return args.filter.every(function checkFilterInstruction(instruction) {
+            return filter.every(function checkFilterInstruction(instruction) {
                 switch (instruction.op) {
                     case `LT`:
                         return element[instruction.field] < instruction.value;
@@ -118,7 +119,7 @@ function createListHandler(key, shape, data) {
             });
         }
 
-        function order(array, instructions) {
+        function orderArray(array, instructions) {
             if (Array.isArray(instructions) && instructions.length) {
                 array.sort(compare);
             }
