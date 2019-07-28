@@ -22,14 +22,14 @@ function createListHandler(key, shape, data) {
      * @param {string} args.input.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {object} context.log.stat.increment The stat function to increment a counter
-     * @param {object} context.log.stat.gauge The stat function to monitor values over time
+     * @param {object} context.stat The stats object
+     * @param {object} context.stat.increment The stat function to increment a counter
+     * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     function list(source, args, context) {
         const { first, last, after, before, filter, order } = args.input;
         if (first <= 0 || last <= 0) {
-            context.log.stat.gauge(`datasource.memory.list.count`, 0);
+            context.stat.gauge(`datasource.memory.list.count`, 0);
             return emptyConnection();
         }
 
@@ -91,7 +91,7 @@ function createListHandler(key, shape, data) {
             pageInfo: { hasPreviousPage, hasNextPage }
         };
 
-        context.log.stat.gauge(`datasource.memory.list.count`, result.length);
+        context.stat.gauge(`datasource.memory.list.count`, result.length);
         return connection;
 
         function filterElement(element) {

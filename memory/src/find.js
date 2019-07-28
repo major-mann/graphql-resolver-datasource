@@ -12,8 +12,8 @@ function createFindHandler(key, shape, data) {
      * @param {object} args.input The search object
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment creation stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment creation stats
      * @throws When args.input is not an object
      */
     function find(source, args, context) {
@@ -25,9 +25,9 @@ function createFindHandler(key, shape, data) {
         }
         const record = data.find(element => elementMatches(key, element, args.input));
         if (record) {
-            context.log.stat.increment(`datasource.memory.find.found`);
+            context.stat.increment(`datasource.memory.find.found`);
         } else {
-            context.log.stat.increment(`datasource.memory.find.missing`);
+            context.stat.increment(`datasource.memory.find.missing`);
         }
         return record;
     }

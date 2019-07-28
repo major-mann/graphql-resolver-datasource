@@ -12,8 +12,8 @@ function createCreateHandler(key, shape, data) {
      * @param {object} args.input The document to create
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment creation stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment creation stats
      * @throws When args.input is not an object, or when shape is supplied and args.input does not match it
      */
     function create(source, args, context) {

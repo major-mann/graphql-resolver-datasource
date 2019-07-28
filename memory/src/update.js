@@ -12,8 +12,8 @@ function createUpdateHandler(key, shape, data) {
      * @param {object} args.input The document to update
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @throws When args.input is not an object, when the document to update cannot be found or when shape is supplied and
      *         args.input combined with the existing data does not match it
      */

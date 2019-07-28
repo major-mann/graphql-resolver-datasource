@@ -14,8 +14,8 @@ function createUpsertHandler(key, shape, data) {
      * @param {object} args.input The document to create or replace
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @param {object} info The resolution information that can be used to determine, for example, the fields being selected
      * @throws When args.input is not an object, or when shape is supplied and args.input does not match it
      */
