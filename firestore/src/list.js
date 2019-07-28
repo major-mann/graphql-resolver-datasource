@@ -24,9 +24,9 @@ function createListHandler(collection, createKey) {
      * @param {string} args.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {object} context.log.stat.increment The stat function to increment a counter
-     * @param {object} context.log.stat.gauge The stat function to monitor values over time
+     * @param {object} context.stat The stats object
+     * @param {object} context.stat.increment The stat function to increment a counter
+     * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
         const isTailQuery = args.input.last > args.input.first ||
@@ -36,8 +36,8 @@ function createListHandler(collection, createKey) {
         const { filter, order, before, after, first, last } = extractArgs(args, isTailQuery);
 
         if (first <= 0 || last <= 0) {
-            context.log.stat.gauge(`datasource.firestore.list.count`, 0);
-            context.log.stat.increment(`datasource.firestore.list.complete`);
+            context.stat.gauge(`datasource.firestore.list.count`, 0);
+            context.stat.increment(`datasource.firestore.list.complete`);
             return emptyConnection();
         }
 
@@ -97,7 +97,7 @@ function createListHandler(collection, createKey) {
             pageInfo: { hasPreviousPage, hasNextPage }
         };
 
-        context.log.stat.gauge(`datasource.firestore.list.count`, results.length);
+        context.stat.gauge(`datasource.firestore.list.count`, results.length);
         return connection;
 
         function calculateLimit() {

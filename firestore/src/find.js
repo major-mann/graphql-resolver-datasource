@@ -8,8 +8,8 @@ module.exports = function createFindHandler(collection, createKey) {
      * @param {object} args.input The search object
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment creation stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment creation stats
      * @throws When args.input is not an object
      */
     async function find(source, args, context) {
@@ -26,9 +26,9 @@ module.exports = function createFindHandler(collection, createKey) {
             undefined;
 
         if (record) {
-            context.log.stat.increment(`datasource.firestore.find.found`);
+            context.stat.increment(`datasource.firestore.find.found`);
         } else {
-            context.log.stat.increment(`datasource.firestore.find.missing`);
+            context.stat.increment(`datasource.firestore.find.missing`);
         }
         return record;
     }

@@ -1,6 +1,6 @@
 {
     "name": "@major-mann/graphql-resolver-datasource-firestore",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A collection of data resolvers backed by firestore",
     "main": "src/index.js",
     "scripts": {

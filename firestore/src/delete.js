@@ -8,8 +8,8 @@ module.exports = function createDeleteHandler(collection, createKey) {
      * @param {object} args.input The document to create or replace
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @throws When args.input is not an object
      */
     async function remove(source, args, context) {
@@ -23,10 +23,10 @@ module.exports = function createDeleteHandler(collection, createKey) {
         const removed = await docRef.get();
         if (removed.exists) {
             await docRef.delete();
-            context.log.stat.increment(`datasource.firestore.delete.found`);
+            context.stat.increment(`datasource.firestore.delete.found`);
             return removed.data();
         } else {
-            context.log.stat.increment(`datasource.firestore.delete.missing`);
+            context.stat.increment(`datasource.firestore.delete.missing`);
             return undefined;
         }
     }

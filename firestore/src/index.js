@@ -30,14 +30,14 @@ function createFirestoreDatasource(collection, createKey, autoGenerate) {
         const timingStatName = `datasource.firestore.${name}.time`;
         return async function timeExecution(source, args, context, info) {
             const executionStart = Date.now();
-            context.log.stat.increment(beginStatName);
+            context.stat.increment(beginStatName);
             try {
                 const result = await resolver(source, args, context, info);
-                context.log.stat.increment(completeStatName);
-                context.log.stat.timing(timingStatName, executionStart);
+                context.stat.increment(completeStatName);
+                context.stat.timing(timingStatName, executionStart);
                 return result;
             } catch (ex) {
-                context.log.stat.increment(failStatName);
+                context.stat.increment(failStatName);
                 throw ex;
             }
         };
