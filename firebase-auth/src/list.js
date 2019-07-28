@@ -22,15 +22,15 @@ function createListHandler(auth, find) {
      * @param {string} args.input.filter.value The value the comparison should be made from (values will be coalesced)
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {object} context.log.stat.increment The stat function to increment a counter
-     * @param {object} context.log.stat.gauge The stat function to monitor values over time
+     * @param {object} context.stat The stats object
+     * @param {object} context.stat.increment The stat function to increment a counter
+     * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
         const { first, last, after, before, filter, order } = args.input;
         if (first <= 0 || last <= 0) {
-            context.log.stat.gauge(`datasource.firebase-auth.list.count`, 0);
-            context.log.stat.increment(`datasource.firebase-auth.list.complete`);
+            context.stat.gauge(`datasource.firebase-auth.list.count`, 0);
+            context.stat.increment(`datasource.firebase-auth.list.complete`);
             return emptyConnection();
         }
 

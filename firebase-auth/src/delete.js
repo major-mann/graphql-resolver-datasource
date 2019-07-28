@@ -8,8 +8,8 @@ module.exports = function createDeleteHandler(auth, find) {
      * @param {object} args.input The document to create or replace
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @param {object} info The query information object
      * @throws When args.input is not an object
      */
@@ -20,10 +20,10 @@ module.exports = function createDeleteHandler(auth, find) {
         const user = await find(source, args, context, info);
         if (user) {
             await auth.deleteUser(user.uid);
-            context.log.stat.increment(`datasource.firebase-auth.delete.found`);
+            context.stat.increment(`datasource.firebase-auth.delete.found`);
             return user;
         } else {
-            context.log.stat.increment(`datasource.firebase-auth.delete.missing`);
+            context.stat.increment(`datasource.firebase-auth.delete.missing`);
             return undefined;
         }
     }

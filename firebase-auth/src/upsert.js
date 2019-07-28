@@ -11,8 +11,8 @@ function createUpsertHandler(find, create, update) {
      * @param {object} args.input The document to create or replace
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @param {object} info The query information
      * @throws When args.input is not an object
      */
