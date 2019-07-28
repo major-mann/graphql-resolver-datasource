@@ -1,6 +1,6 @@
 {
     "name": "@major-mann/generator-graphql-resolver-datasource",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A generator for datasource projects",
     "author": "Calvin Mann <calvinmann+npm@gmail.com>",
     "license": "MIT",
