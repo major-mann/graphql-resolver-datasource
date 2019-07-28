@@ -47,14 +47,12 @@ module.exports = class extends Generator {
         const source = {};
         const info = {};
         const context = {
-            log: {
-                stat: {
-                    increment: () => undefined,
-                    decrement: () => undefined,
-                    timing: () => undefined,
-                    update: () => undefined,
-                    gauge: () => undefined
-                }
+            stat: {
+                increment: () => undefined,
+                decrement: () => undefined,
+                timing: () => undefined,
+                update: () => undefined,
+                gauge: () => undefined
             }
         };
 

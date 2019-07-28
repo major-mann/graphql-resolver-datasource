@@ -8,8 +8,8 @@ module.exports = function createDeleteHandler() {
      * @param {object} args.input The document to create or replace
      * @param {object} context The context the resolver is being executed in
      * @param {object} context.log The logging object
-     * @param {object} context.log.stat The stats object
-     * @param {function} context.log.stat.increment The function called to increment upsertion stats
+     * @param {object} context.stat The stats object
+     * @param {function} context.stat.increment The function called to increment upsertion stats
      * @throws When args.input is not an object
      */
     async function remove(source, args, context) {
@@ -22,9 +22,9 @@ module.exports = function createDeleteHandler() {
         // TODO: Implement removal here
 
         if (removed) {
-            context.log.stat.increment(`datasource.<%= name %>.delete.found`);
+            context.stat.increment(`datasource.<%= name %>.delete.found`);
         } else {
-            context.log.stat.increment(`datasource.<%= name %>.delete.missing`);
+            context.stat.increment(`datasource.<%= name %>.delete.missing`);
         }
         return removed;
     }
