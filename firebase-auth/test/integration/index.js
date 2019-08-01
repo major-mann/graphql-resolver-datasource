@@ -5,7 +5,6 @@ const chalk = require(`chalk`);
 
 const validateDelete = require(`./validate-delete.js`);
 const validateCreate = require(`./validate-create.js`);
-const validateUpsert = require(`./validate-upsert.js`);
 const validateUpdate = require(`./validate-update.js`);
 const validateFind = require(`./validate-find.js`);
 const validateList = require(`./validate-list.js`);
@@ -21,14 +20,12 @@ async function validate() {
     const source = {};
     const info = {};
     const context = {
-        log: {
-            stat: {
-                increment: () => undefined,
-                decrement: () => undefined,
-                timing: () => undefined,
-                update: () => undefined,
-                gauge: () => undefined
-            }
+        stat: {
+            increment: () => undefined,
+            decrement: () => undefined,
+            timing: () => undefined,
+            update: () => undefined,
+            gauge: () => undefined
         }
     };
 
@@ -46,14 +43,6 @@ async function validate() {
             console.log(chalk.green(`Creation functionality has been validated`)); // eslint-disable-line no-console
         } else {
             console.log(chalk.red(`Creation functionality has failed validation`)); // eslint-disable-line no-console
-            return;
-        }
-
-        console.log(chalk.yellow(`Validating upsertion functionality`)); // eslint-disable-line no-console
-        if (await validateUpsert(resolvers, source, context, info)) {
-            console.log(chalk.green(`Upsertion functionality has been validated`)); // eslint-disable-line no-console
-        } else {
-            console.log(chalk.red(`Upsertion functionality has failed validation`)); // eslint-disable-line no-console
             return;
         }
 
