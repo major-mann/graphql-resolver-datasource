@@ -143,7 +143,7 @@ function createListHandler(auth, find) {
                 let user;
                 switch (field) {
                     case `uid`:
-                        user = await findByUid(value);
+                        user = await find(value);
                         break;
                     case `email`:
                         user = await findByEmail(value);
@@ -190,10 +190,6 @@ function createListHandler(auth, find) {
                     throw new Error(`Filter operations on users only support comparison (equals) operations`);
                 }
             }
-        }
-
-        function findByUid(uid) {
-            return findBy(() => auth.getUser(uid));
         }
 
         function findByEmail(email) {
