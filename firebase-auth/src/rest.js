@@ -6,9 +6,6 @@ const VERIFY_CUSTOM_TOKEN_URI = apiKey => `https://www.googleapis.com/identityto
     `?key=${apiKey}`;
 const REFRESH_ID_TOKEN_URI = apiKey => `https://securetoken.googleapis.com/v1/token?key=${apiKey}`;
 
-const VERIFY_PASSWORD_RESPONSE = `identitytoolkit#SignInWithPasswordResponse`;
-const VERIFY_CUSTOM_TOKEN_RESPONSE = `identitytoolkit#VerifyCustomTokenResponse`;
-
 const fetch = require(`node-fetch`);
 
 function createRestInterface(apiKey) {
@@ -23,7 +20,7 @@ function createRestInterface(apiKey) {
     };
 
     async function verifyPassword(email, password) {
-        const response = await post(verifyPasswordUri, VERIFY_PASSWORD_RESPONSE, {
+        const response = await post(verifyPasswordUri, {
             email,
             password,
             returnSecureToken: true
@@ -32,7 +29,7 @@ function createRestInterface(apiKey) {
     }
 
     async function verifyCustomToken(token) {
-        const response = await post(verifyCustomTokenUri, VERIFY_CUSTOM_TOKEN_RESPONSE, {
+        const response = await post(verifyCustomTokenUri, {
             token,
             returnSecureToken: true
         });
@@ -47,7 +44,7 @@ function createRestInterface(apiKey) {
         return response;
     }
 
-    async function post(uri, responseType, data) {
+    async function post(uri, data) {
         if (!apiKey) {
             throw new Error(`No API key available. Unable to make call to API`);
         }
@@ -63,12 +60,7 @@ function createRestInterface(apiKey) {
             await response.text();
 
         if (response.ok) {
-            if (body && body.kind === responseType) {
-                return body;
-            } else {
-                throw new Error(`Invalid response kind ${JSON.stringify(body && body.kind)} received. ` +
-                    `Expected ${JSON.stringify(responseType)}`);
-            }
+            return body;
         } else if (body && typeof body === `object`) {
             let errBody = body;
             if (body.error && typeof body.error === `object`) {
