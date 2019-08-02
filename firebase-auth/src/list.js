@@ -27,7 +27,7 @@ function createListHandler(auth, find) {
      * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
-        const { first, last, after, before, filter, order } = args.input;
+        const { first, last, after, before, filter, order } = (args.input || {});
         if (first <= 0 || last <= 0) {
             context.stat.gauge(`datasource.firebase-auth.list.count`, 0);
             context.stat.increment(`datasource.firebase-auth.list.complete`);
