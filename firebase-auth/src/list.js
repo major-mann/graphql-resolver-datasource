@@ -143,7 +143,7 @@ function createListHandler(auth, find) {
                 let user;
                 switch (field) {
                     case `uid`:
-                        user = await find(value);
+                        user = await findByUid(value);
                         break;
                     case `email`:
                         user = await findByEmail(value);
@@ -192,23 +192,21 @@ function createListHandler(auth, find) {
             }
         }
 
-        async function findByEmail(email) {
-            try {
-                const user = await auth.getUserByEmail(email);
-                return user;
-            } catch (ex) {
-                if (ex.code === `auth/user-not-found`) {
-                    return undefined;
-                } else {
-                    throw ex;
-                }
-            }
+        function findByUid(uid) {
+            return findBy(() => auth.getUser(uid));
         }
 
-        async function findByPhoneNumber(phoneNumber) {
+        function findByEmail(email) {
+            return findBy(() => auth.getUserByEmail(email));
+        }
+
+        function findByPhoneNumber(phoneNumber) {
+            return findBy(() => auth.getUserByPhoneNumber(phoneNumber));
+        }
+
+        function findBy(handler) {
             try {
-                const user = await auth.getUserByPhoneNumber(phoneNumber);
-                return user;
+                return handler();
             } catch (ex) {
                 if (ex.code === `auth/user-not-found`) {
                     return undefined;
