@@ -2,7 +2,7 @@ module.exports = createListHandler;
 
 const LIMIT = 200;
 
-function createListHandler(auth, find) {
+function createListHandler(auth) {
     return list;
 
     /**
@@ -143,7 +143,7 @@ function createListHandler(auth, find) {
                 let user;
                 switch (field) {
                     case `uid`:
-                        user = await find(value);
+                        user = await findByUid(value);
                         break;
                     case `email`:
                         user = await findByEmail(value);
@@ -190,6 +190,10 @@ function createListHandler(auth, find) {
                     throw new Error(`Filter operations on users only support comparison (equals) operations`);
                 }
             }
+        }
+
+        function findByUid(uid) {
+            return findBy(() => auth.getUser(uid));
         }
 
         function findByEmail(email) {

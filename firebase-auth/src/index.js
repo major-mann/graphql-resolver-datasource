@@ -29,7 +29,7 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         verifyToken,
         authenticate,
         refreshIdToken,
-        list: createListHandler(auth, find),
+        list: createListHandler(auth),
         delete: createDeleteHandler(auth, find),
         upsert: createUpsertHandler(find, create, update)
     };
