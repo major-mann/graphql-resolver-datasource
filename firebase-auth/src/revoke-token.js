@@ -8,6 +8,6 @@ module.exports = function createRevokeTokenHandler(auth) {
      * @param {object} args.uid The user id to revoke the tokens for
      */
     async function revokeToken(source, args) {
-        await auth.revokeRefreshTokens(args.uid);
+        await auth.revokeRefreshTokens(args.input.uid);
     }
 };

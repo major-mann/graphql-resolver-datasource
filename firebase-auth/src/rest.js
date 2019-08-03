@@ -37,7 +37,7 @@ function createRestInterface(apiKey) {
     }
 
     async function refreshIdToken(refreshToken) {
-        const response = await post(refreshIdTokenUri, undefined, {
+        const response = await post(refreshIdTokenUri, {
             grant_type: `refresh_token`,
             refresh_token: refreshToken
         });

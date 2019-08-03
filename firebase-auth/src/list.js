@@ -60,14 +60,10 @@ function createListHandler(auth) {
             if (cursor && cursor.offset > 0) {
                 lim = lim + cursor.offset;
             }
-            const listResult = await auth.listUsers(lim + 1, cursor && cursor.list);
+            const listResult = await auth.listUsers(lim, cursor && cursor.list);
             let users = [];
             listResult.users.forEach(user => users.push(user));
-
-            if (users.length > lim) {
-                hasNextPage = true;
-                users.pop();
-            }
+            hasNextPage = users.length >= lim && !!listResult.pageToken;
 
             // Remove any from the offset
             if (cursor && cursor.offset > 0) {
@@ -89,8 +85,8 @@ function createListHandler(auth) {
                             .map(buildEdge)
                             .filter(e => e),
                         pageInfo: {
-                            hasPreviousPage: Boolean(cursor) || last > 0,
-                            hasNextPage: Boolean(listResult.pageToken) || hasNextPage
+                            hasNextPage,
+                            hasPreviousPage: Boolean(cursor) || last > 0
                         }
                     };
                 } else {
