@@ -1,6 +1,7 @@
 module.exports = createFirebaseAuthDatasource;
 
 const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
+    createLastLogoutTokenHandler = require(`./last-logout.js`),
     createAuthenticateHandler = require(`./authenticate.js`),
     createVerifyTokenHandler = require(`./verify-token.js`),
     createRevokeTokenHandler = require(`./revoke-token.js`),
@@ -18,6 +19,7 @@ function createFirebaseAuthDatasource(auth, apiKey) {
     const revokeToken = createRevokeTokenHandler(auth, rest);
     const verifyToken = createVerifyTokenHandler(auth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
+    const lastLogout = createLastLogoutTokenHandler(auth);
     const find = createFindHandler(auth);
     const create = createCreateHandler(auth);
     const update = createUpdateHandler(auth);
@@ -25,6 +27,7 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         find,
         create,
         update,
+        lastLogout,
         revokeToken,
         verifyToken,
         authenticate,

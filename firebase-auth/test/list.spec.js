@@ -163,6 +163,7 @@ describe(`list`, () => {
         expect(result.pageInfo.hasPreviousPage).toBe(true);
     });
     it(`should return hasNextPage: true when there is another record (in the subset resulting from filter, but not last or before) after the last returned record`, async () => {
+        listResult.pageToken = true;
         let result = await list(undefined, { input: { first: 2 } }, context);
         expect(result.pageInfo.hasNextPage).toBe(true);
     });
