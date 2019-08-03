@@ -1,7 +1,6 @@
 module.exports = createFirebaseAuthDatasource;
 
 const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
-    createLastLogoutTokenHandler = require(`./last-logout.js`),
     createAuthenticateHandler = require(`./authenticate.js`),
     createVerifyTokenHandler = require(`./verify-token.js`),
     createRevokeTokenHandler = require(`./revoke-token.js`),
