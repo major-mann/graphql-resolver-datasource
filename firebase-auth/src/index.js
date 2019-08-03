@@ -19,7 +19,6 @@ function createFirebaseAuthDatasource(auth, apiKey) {
     const revokeToken = createRevokeTokenHandler(auth, rest);
     const verifyToken = createVerifyTokenHandler(auth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
-    const lastLogout = createLastLogoutTokenHandler(auth);
     const find = createFindHandler(auth);
     const create = createCreateHandler(auth);
     const update = createUpdateHandler(auth);
@@ -27,7 +26,6 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         find,
         create,
         update,
-        lastLogout,
         revokeToken,
         verifyToken,
         authenticate,
