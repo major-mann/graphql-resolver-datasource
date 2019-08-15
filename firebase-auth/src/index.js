@@ -4,6 +4,7 @@ const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
     createAuthenticateHandler = require(`./authenticate.js`),
     createVerifyTokenHandler = require(`./verify-token.js`),
     createRevokeTokenHandler = require(`./revoke-token.js`),
+    createImportUsersHandler = require(`./import-users.js`),
     createCreateHandler = require(`./create.js`),
     createUpsertHandler = require(`./upsert.js`),
     createUpdateHandler = require(`./update.js`),
@@ -21,10 +22,13 @@ function createFirebaseAuthDatasource(auth, apiKey) {
     const find = createFindHandler(auth);
     const create = createCreateHandler(auth);
     const update = createUpdateHandler(auth);
+    const importUsers = createImportUsersHandler(auth);
+
     const resolvers = {
         find,
         create,
         update,
+        importUsers,
         revokeToken,
         verifyToken,
         authenticate,
