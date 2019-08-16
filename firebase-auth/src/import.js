@@ -33,10 +33,24 @@ module.exports = function createImportUsersHandler(auth) {
         if (args.input.users.length === 0) {
             return;
         }
-        const result = await auth.importUsers(
-            args.input.users,
-            args.input.options
-        );
+        const users = args.input.users.map(user => ({
+            ...user,
+            passwordHash: asBuffer(user.passwordHash),
+            passwordSalt: asBuffer(user.passwordSalt)
+        }));
+        const options = args.input.options && {
+            ...args.input.options,
+            key: asBuffer(args.input.options.key),
+            saltSeparator: asBuffer(args.input.options.saltSeparator)
+        };
+        const result = await auth.importUsers(users, options);
         return result;
+    }
+
+    function asBuffer(str) {
+        if (str === undefined) {
+            return undefined;
+        }
+        return Buffer.from(str, `base64`);
     }
 };
