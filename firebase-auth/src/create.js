@@ -38,8 +38,12 @@ function createCreateHandler(auth, find) {
                 algorithm: input.passwordHash.algorithm
             }
         };
-        input.passwordHash = input.passwordHash && input.passwordHash.hash;
-        await auth.importUsers([input], options);
+        input.passwordHash = input.passwordHash &&
+            Buffer.from(input.passwordHash.hash, `base64`);
+        const importResult = await auth.importUsers([input], options);
+        if (importResult.errors.length) {
+            throw importResult.errors[0].error;
+        }
         const result = await find(
             source,
             { input },
