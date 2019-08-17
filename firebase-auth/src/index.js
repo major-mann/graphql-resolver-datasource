@@ -19,20 +19,21 @@ function createFirebaseAuthDatasource(auth, apiKey) {
     const verifyToken = createVerifyTokenHandler(auth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
     const find = createFindHandler(auth);
-    const create = createCreateHandler(auth, find);
+    const upsert = createUpsertHandler(auth, find);
+    const create = createCreateHandler(auth, find, upsert);
     const update = createUpdateHandler(auth);
 
     const resolvers = {
         find,
         create,
         update,
+        upsert,
         revokeToken,
         verifyToken,
         authenticate,
         refreshIdToken,
         list: createListHandler(auth),
-        delete: createDeleteHandler(auth, find),
-        upsert: createUpsertHandler(find, create, update)
+        delete: createDeleteHandler(auth, find)
     };
 
     return Object.keys(resolvers).reduce((result, name) => {

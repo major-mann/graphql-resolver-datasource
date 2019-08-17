@@ -1,12 +1,10 @@
 module.exports = createCreateHandler;
 
 const UID_SIZE = 28;
-const SALT_ROUNDS = 8;
 
 const crypto = require(`crypto`);
-const bcrypt = require(`bcrypt`);
 
-function createCreateHandler(auth, find) {
+function createCreateHandler(auth, find, upsert) {
     return create;
 
     /**
@@ -14,58 +12,33 @@ function createCreateHandler(auth, find) {
      * @param {*} source Unused
      * @param {object} args The arguments to create the entity with.
      * @param {object} args.input The document to create
-     * @throws When args.input is not an object
      */
     async function create(source, args, context, info) {
-        if (!args.input || typeof args.input !== `object`) {
-            throw new Error(`No input value supplied in args`);
-        }
         const shouldImport = args.input.uid ||
             (!args.input.password && args.input.passwordHash);
 
         if (!shouldImport) {
             const user = await auth.createUser(args.input);
+            if (args.input.claims) {
+                await auth.setCustomUserClaims(user.uid, args.input.claims);
+            }
             return user;
         }
-        const input = { ...args.input };
-        await Promise.all([
-            ensureUid(input),
-            ensurePasswordHash(input)
-        ]);
 
-        const options = input.passwordHash && {
-            hash: {
-                algorithm: input.passwordHash.algorithm
+        args = { ...args, input: { ...args.input } };
+        if (args.input.uid) {
+            const existing = await find(source, args, context, info);
+            if (existing) {
+                // TODO: Add correct code to error
+                throw new Error(`user with uid "${args.input.uid}" already exists`);
             }
-        };
-        input.passwordHash = input.passwordHash &&
-            Buffer.from(input.passwordHash.hash, `base64`);
-        const importResult = await auth.importUsers([input], options);
-        if (importResult.errors.length) {
-            throw importResult.errors[0].error;
+        } else {
+            args.input.uid = await generateUid();
         }
-        const result = await find(
-            source,
-            { input },
-            context,
-            info
-        );
+
+        // TODO: Normalize any errors coming out of upsert to be the same as create
+        const result = await upsert(source, args, context, info);
         return result;
-    }
-
-    async function ensureUid(input) {
-        if (!input.uid) {
-            input.uid = await generateUid();
-        }
-    }
-
-    async function ensurePasswordHash(input) {
-        if (!input.passwordHash && input.password) {
-            input.passwordHash = {
-                algorithm: `BCRYPT`,
-                hash: await bcrypt.hash(input.password, SALT_ROUNDS)
-            };
-        }
     }
 
     function generateUid() {

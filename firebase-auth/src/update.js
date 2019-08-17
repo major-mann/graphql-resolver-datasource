@@ -14,7 +14,10 @@ function createUpdateHandler(auth) {
         if (!args.input) {
             throw new Error(`No input value supplied in args`);
         }
-        const user = await auth.updateUser(args.input.uid, args.input);
+        const [user] = await Promise.all([
+            auth.updateUser(args.input.uid, args.input),
+            args.input.claims && auth.setCustomUserClaims(args.input.uid, args.input.claims)
+        ]);
         return user;
     }
 
