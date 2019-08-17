@@ -13,7 +13,12 @@ module.exports = function createFindHandler(auth) {
             throw new Error(`No input value supplied in args`);
         }
         try {
-            const user = await auth.getUser(args.input.uid);
+            let user = await auth.getUser(args.input.uid);
+            user = { ...user };
+            if (user.customClaims) {
+                user.claims = user.customClaims;
+                delete user.customClaims;
+            }
             return user;
         } catch (ex) {
             if (ex.code === `auth/user-not-found`) {

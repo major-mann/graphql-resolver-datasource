@@ -104,7 +104,8 @@ function createListHandler(auth) {
                                 email: user.email,
                                 emailVerified: user.emailVerified,
                                 phoneNumber: user.phoneNumber,
-                                disabled: user.disabled
+                                disabled: user.disabled,
+                                claims: user.customClaims
                             },
                             cursor: edgeCursor
                         };

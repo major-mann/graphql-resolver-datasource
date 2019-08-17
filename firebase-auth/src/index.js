@@ -21,7 +21,7 @@ function createFirebaseAuthDatasource(auth, apiKey) {
     const find = createFindHandler(auth);
     const upsert = createUpsertHandler(auth, find);
     const create = createCreateHandler(auth, find, upsert);
-    const update = createUpdateHandler(auth);
+    const update = createUpdateHandler(auth, find, upsert);
 
     const resolvers = {
         find,

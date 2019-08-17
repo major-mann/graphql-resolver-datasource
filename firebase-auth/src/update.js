@@ -1,6 +1,6 @@
 module.exports = createUpdateHandler;
 
-function createUpdateHandler(auth) {
+function createUpdateHandler(auth, find, upsert) {
     return update;
 
     /**
@@ -10,15 +10,22 @@ function createUpdateHandler(auth) {
      * @param {object} args.input The document to update
      * @throws When args.input is not an object, when the document to update cannot be found
      */
-    async function update(source, args) {
-        if (!args.input) {
-            throw new Error(`No input value supplied in args`);
+    async function update(source, args, context, info) {
+        if (!args.input.password && args.input.passwordHash) {
+            const existing = await find(source, args, context, info);
+            const input = {
+                ...existing,
+                ...args.input
+            };
+            const result = await upsert(source, { input }, context, info);
+            return result;
+        } else {
+            const [user] = await Promise.all([
+                auth.updateUser(args.input.uid, args.input),
+                args.input.claims && auth.setCustomUserClaims(args.input.uid, args.input.claims)
+            ]);
+            return user;
         }
-        const [user] = await Promise.all([
-            auth.updateUser(args.input.uid, args.input),
-            args.input.claims && auth.setCustomUserClaims(args.input.uid, args.input.claims)
-        ]);
-        return user;
     }
 
 }

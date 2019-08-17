@@ -13,6 +13,7 @@
         "jest": ""
     },
     "dependencies": {
+        "bcrypt": "^3.0.6",
         "firebase-admin": "^8.3.0"
     }
 }
