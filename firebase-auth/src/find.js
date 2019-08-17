@@ -14,8 +14,8 @@ module.exports = function createFindHandler(auth) {
         }
         try {
             let user = await auth.getUser(args.input.uid);
-            user = { ...user };
             if (user.customClaims) {
+                user = { ...user };
                 user.claims = user.customClaims;
                 delete user.customClaims;
             }
