@@ -18,8 +18,8 @@ function createCreateHandler(auth, find, upsert) {
 
         if (!shouldUpsert) {
             const user = await auth.createUser(args.input);
-            if (args.input.claims) {
-                await auth.setCustomUserClaims(user.uid, args.input.claims);
+            if (args.input.customClaims) {
+                await auth.setCustomUserClaims(user.uid, args.input.customClaims);
             }
             return user;
         }

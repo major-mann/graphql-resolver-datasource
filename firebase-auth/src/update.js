@@ -22,7 +22,10 @@ function createUpdateHandler(auth, find, upsert) {
         } else {
             const [user] = await Promise.all([
                 auth.updateUser(args.input.uid, args.input),
-                args.input.claims && auth.setCustomUserClaims(args.input.uid, args.input.claims)
+                args.input.customClaims && auth.setCustomUserClaims(
+                    args.input.uid,
+                    args.input.customClaims
+                )
             ]);
             return user;
         }
