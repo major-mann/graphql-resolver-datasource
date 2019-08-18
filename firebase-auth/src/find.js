@@ -14,11 +14,6 @@ module.exports = function createFindHandler(auth) {
         }
         try {
             let user = await auth.getUser(args.input.uid);
-            if (user.customClaims) {
-                user = { ...user };
-                user.claims = user.customClaims;
-                delete user.customClaims;
-            }
             return user;
         } catch (ex) {
             if (ex.code === `auth/user-not-found`) {

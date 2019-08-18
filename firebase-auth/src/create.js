@@ -14,10 +14,10 @@ function createCreateHandler(auth, find, upsert) {
      * @param {object} args.input The document to create
      */
     async function create(source, args, context, info) {
-        const shouldImport = args.input.uid ||
+        const shouldUpsert = args.input.uid ||
             (!args.input.password && args.input.passwordHash);
 
-        if (!shouldImport) {
+        if (!shouldUpsert) {
             const user = await auth.createUser(args.input);
             if (args.input.claims) {
                 await auth.setCustomUserClaims(user.uid, args.input.claims);
