@@ -18,6 +18,7 @@ function createUpsertHandler(auth, find) {
 
         // This will convert "password" to a BCRYPT "passwordHash"
         await ensurePasswordHash(input);
+        const hashImportOptions = buildImportOptions(input.passwordHash);
         input.passwordHash = input.passwordHash && Buffer.from(input.passwordHash.hash, `base64`);
 
         // Import allows duplicates to go through for effeciency purposes.
@@ -27,10 +28,7 @@ function createUpsertHandler(auth, find) {
         //  through an alternate vector
         await ensureUniqueEmailPhone();
 
-        const importResult = await auth.importUsers(
-            [input],
-            buildHashOptions(input.passwordHash)
-        );
+        const importResult = await auth.importUsers([input], hashImportOptions);
         if (importResult.errors.length) {
             throw importResult.errors[0].error;
         }
@@ -93,7 +91,7 @@ function createUpsertHandler(auth, find) {
         }
     }
 
-    function buildHashOptions(passwordHash) {
+    function buildImportOptions(passwordHash) {
         return passwordHash && {
             hash: {
                 algorithm: passwordHash.algorithm
