@@ -14,8 +14,7 @@ function createCreateHandler(auth, find, upsert) {
      * @param {object} args.input The document to create
      */
     async function create(source, args, context, info) {
-        const shouldUpsert = args.input.uid ||
-            (!args.input.password && args.input.passwordHash);
+        const shouldUpsert = !args.input.password && args.input.passwordHash;
 
         if (!shouldUpsert) {
             const user = await auth.createUser(args.input);
