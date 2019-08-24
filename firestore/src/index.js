@@ -9,6 +9,9 @@ const createCreateHandler = require(`./create.js`),
 
 function createFirestoreDatasource(collection, createKey, autoGenerate) {
     // TODO: Check args
+    // TODO: How could we somehow expose transactions?
+    //  might not be useful in terms of read, determine write scenarios
+    //  but would be nice to have some consistency across multiple writes?
     const resolvers = {
         find: createFindHandler(collection, createKey),
         list: createListHandler(collection, createKey),

@@ -20,7 +20,7 @@ function createCreateHandler(collection, createKey, autoGenerate) {
         }
         const id = createKey(input);
         const docRef = collection.doc(id);
-        await docRef.create(args.input);
+        await docRef.create({ ...args.input });
         return { ...args.input };
     }
 

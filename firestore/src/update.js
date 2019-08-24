@@ -17,7 +17,7 @@ function createUpdateHandler(collection, createKey) {
 
         const id = createKey(args.input);
         const docRef = collection.doc(id);
-        await docRef.update(args.input);
+        await docRef.update({ ...args.input });
         const doc = await docRef.get();
 
         if (doc.exists) {

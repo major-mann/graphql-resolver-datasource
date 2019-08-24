@@ -18,9 +18,8 @@ function createUpsertHandler(collection, createKey) {
 
         const id = createKey(args.input);
         const docRef = collection.doc(id);
-        await docRef.set(args.input, { merge: false });
-
-        return { ...args.input };
+        const copy = { ...args.input };
+        await docRef.set(copy, { merge: false });
+        return copy;
     }
-
 }
