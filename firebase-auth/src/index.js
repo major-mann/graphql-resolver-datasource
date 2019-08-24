@@ -34,7 +34,10 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         refreshIdToken,
         list: createListHandler(auth),
         delete: createDeleteHandler(auth, find),
-        sendPasswordResetMail: rest.sendPasswordResetMail
+        sendPasswordResetMail: (source, args) => rest.sendPasswordResetMail(
+            args.input.email,
+            args.input.locale
+        )
     };
 
     return Object.keys(resolvers).reduce((result, name) => {
