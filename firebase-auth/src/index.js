@@ -10,7 +10,7 @@ const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
     createDeleteHandler = require(`./delete.js`),
     createFindHandler = require(`./find.js`),
     createListHandler = require(`./list.js`),
-    createRestClient = require(`./rest.js`);
+    createRestClient = require(`./rest/index.js`);
 
 function createFirebaseAuthDatasource(auth, apiKey) {
     const rest = createRestClient(apiKey);
@@ -33,7 +33,8 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         authenticate,
         refreshIdToken,
         list: createListHandler(auth),
-        delete: createDeleteHandler(auth, find)
+        delete: createDeleteHandler(auth, find),
+        sendPasswordResetMail: rest.sendPasswordResetMail
     };
 
     return Object.keys(resolvers).reduce((result, name) => {
