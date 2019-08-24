@@ -1,4 +1,9 @@
-module.exports = function createVerifyTokenHandler(auth, rest) {
+module.exports = createVerifyTokenHandler;
+
+const jwt = require(`jsonwebtoken`);
+const ConsumerError = require(`./consumer-error.js`);
+
+function createVerifyTokenHandler(auth, rest) {
     return verifyToken;
 
     /**
@@ -20,10 +25,11 @@ module.exports = function createVerifyTokenHandler(auth, rest) {
             const claims = await auth.verifySessionCookie(args.input.sessionToken, Boolean(args.input.checkRevoked));
             return claims;
         } else if (args.input.custom) {
-            const claims = await rest.verifyCustomToken(args.input.custom);
+            const tokenData = await rest.verifyCustomToken(args.input.custom);
+            const claims = jwt.decode(tokenData.idToken);
             return claims;
         } else {
-            throw new Error(`MUST supply a token to validate`);
+            throw new ConsumerError(`MUST supply a token to validate`);
         }
     }
-};
+}

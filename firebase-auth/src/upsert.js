@@ -3,6 +3,7 @@ module.exports = createUpsertHandler;
 const SALT_ROUNDS = 8;
 
 const bcrypt = require(`bcrypt`);
+const ConsumerError = require(`./consumer-error.js`);
 
 function createUpsertHandler(auth, find) {
     return upsert;
@@ -47,11 +48,16 @@ function createUpsertHandler(auth, find) {
             ]);
 
             if (existingEmail && existingEmail.uid !== input.uid) {
-                throw codeError(`auth/email-already-exists`, `The supplied email "${input.email}" is already in use`);
+                throw new ConsumerError(
+                    `The supplied email "${input.email}" is already in use`,
+                    `auth/email-already-exists`
+                );
             }
             if (existingPhone && existingPhone.uid !== input.uid) {
-                throw codeError(`auth/phone-number-already-exists`, `The supplied phoneNumber "${input.phoneNumber}" ` +
-                    `is already in use`);
+                throw new ConsumerError(
+                    `The supplied phoneNumber "${input.phoneNumber}" is already in use`,
+                    `auth/phone-number-already-exists`
+                );
             }
         }
 
@@ -97,11 +103,5 @@ function createUpsertHandler(auth, find) {
                 algorithm: passwordHash.algorithm
             }
         };
-    }
-
-    async function codeError(code, message) {
-        const err = new Error(message);
-        err.code = code;
-        return err;
     }
 }

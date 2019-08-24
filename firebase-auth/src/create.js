@@ -3,6 +3,7 @@ module.exports = createCreateHandler;
 const UID_SIZE = 28;
 
 const crypto = require(`crypto`);
+const ConsumerError = require(`./consumer-error.js`);
 
 function createCreateHandler(auth, find, upsert) {
     return create;
@@ -28,8 +29,10 @@ function createCreateHandler(auth, find, upsert) {
         if (args.input.uid) {
             const existing = await find(source, args, context, info);
             if (existing) {
-                // TODO: Add correct code to error
-                throw new Error(`user with uid "${args.input.uid}" already exists`);
+                throw new ConsumerError(
+                    `user with uid "${args.input.uid}" already exists`,
+                    `auth/uid-already-exists`
+                );
             }
         } else {
             args.input.uid = await generateUid();

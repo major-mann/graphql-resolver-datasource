@@ -11,12 +11,8 @@ module.exports = function createDeleteHandler(auth, find) {
      * @param {object} context.stat The stats object
      * @param {function} context.stat.increment The function called to increment upsertion stats
      * @param {object} info The query information object
-     * @throws When args.input is not an object
      */
     async function remove(source, args, context, info) {
-        if (!args.input || typeof args.input !== `object`) {
-            throw new Error(`No input value supplied in args`);
-        }
         const user = await find(source, args, context, info);
         if (user) {
             await auth.deleteUser(user.uid);

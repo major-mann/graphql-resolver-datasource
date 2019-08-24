@@ -2,6 +2,8 @@ module.exports = createListHandler;
 
 const LIMIT = 200;
 
+const ConsumerError = require(`./consumer-error.js`);
+
 function createListHandler(auth) {
     return list;
 
@@ -35,15 +37,15 @@ function createListHandler(auth) {
         }
 
         if (before || first > 0 === false && last > 0 || last > first) {
-            throw new Error(`firebase auth list does not support accessing data from the tail`);
+            throw new ConsumerError(`firebase auth list does not support accessing data from the tail`);
         }
         if (order && order.length) {
-            throw new Error(`Auth service user listing does not support ordering`);
+            throw new ConsumerError(`Auth service user listing does not support ordering`);
         }
 
         const limit = calculateLimit();
         if (limit > LIMIT) {
-            throw new Error(`The maximum number of records that can be requested (using first and last) ` +
+            throw new ConsumerError(`The maximum number of records that can be requested (using first and last) ` +
                 `is ${LIMIT}. Received ${limit} (first: ${first}. last: ${last})`);
         }
 
@@ -149,7 +151,7 @@ function createListHandler(auth) {
                         user = await findByPhoneNumber(value);
                         break;
                     default:
-                        throw new Error(`Filtering on "${field}" not supported`);
+                        throw new ConsumerError(`Filtering on "${field}" not supported`);
                 }
                 return user;
             }
@@ -184,7 +186,7 @@ function createListHandler(auth) {
 
             function validateFieldOperation(filter) {
                 if (filter.op !== `EQ`) {
-                    throw new Error(`Filter operations on users only support comparison (equals) operations`);
+                    throw new ConsumerError(`Filter operations on users only support comparison (equals) operations`);
                 }
             }
         }

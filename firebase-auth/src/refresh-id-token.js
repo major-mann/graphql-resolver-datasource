@@ -1,4 +1,6 @@
-module.exports = function createRefreshIdTokenHandler(rest) {
+module.exports = createRefreshIdTokenHandler;
+
+function createRefreshIdTokenHandler(rest) {
     return refreshIdToken;
 
     /**
@@ -18,4 +20,4 @@ module.exports = function createRefreshIdTokenHandler(rest) {
             projectId: refreshTokenData.project_id
         };
     }
-};
+}

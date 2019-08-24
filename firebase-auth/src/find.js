@@ -9,9 +9,6 @@ module.exports = function createFindHandler(auth) {
      * @throws When args.input is not an object
      */
     async function find(source, args) {
-        if (!args.input || typeof args.input !== `object`) {
-            throw new Error(`No input value supplied in args`);
-        }
         try {
             let user = await auth.getUser(args.input.uid);
             return user;
