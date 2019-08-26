@@ -12,11 +12,11 @@ function createRefreshIdTokenHandler(rest) {
     async function refreshIdToken(source, args) {
         const refreshTokenData = await rest.refreshIdToken(args.input);
         return {
+            uid: refreshTokenData.user_id,
             idToken: refreshTokenData.id_token,
             refreshToken: refreshTokenData.refresh_token,
             expiresIn: parseInt(refreshTokenData.expires_in),
             tokenType: refreshTokenData.token_type,
-            userId: refreshTokenData.user_id,
             projectId: refreshTokenData.project_id
         };
     }

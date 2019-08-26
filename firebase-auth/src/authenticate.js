@@ -15,12 +15,17 @@ function createAuthenticateHandler(rest) {
         if (typeof args.input.email === `string` && typeof args.input.password === `string`) {
             const tokenData = await rest.verifyPassword(args.input.email, args.input.password);
             if (tokenData) {
-                tokenData.userId = tokenData.localId;
+                tokenData.uid = tokenData.localId;
                 delete tokenData.localId;
             }
             return tokenData;
         } else if (typeof args.input.token === `string`) {
-            return rest.verifyCustomToken(args.input.token);
+            const tokenData = await rest.verifyCustomToken(args.input.token);
+            if (tokenData) {
+                tokenData.uid = tokenData.userId;
+                delete tokenData.userId;
+            }
+            return tokenData;
         } else {
             throw new Error(`Either email and password must be supplied a customToken as "token"`);
         }
