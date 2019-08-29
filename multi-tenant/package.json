@@ -1,0 +1,11 @@
+{
+    "name": "@major-mann/graphql-resolver-datasource-multi-tenant",
+    "version": "0.0.1",
+    "description": "A data source that can aggregate other sources into a single multi tenant structure",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "author": "Calvin Mann <calvinmann@gmail+npm.com>",
+    "license": "MIT"
+}
