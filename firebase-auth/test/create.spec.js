@@ -2,7 +2,7 @@ describe(`create`, () => {
     let createCreate, create, context, auth;
     beforeEach(() => {
         context = require(`./context.js`);
-        createCreate = require(`../src/create.js`);
+        createCreate = require(`../src/user/create.js`);
         auth = {
             createUser: jest.fn(record => record)
         };

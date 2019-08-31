@@ -1,15 +1,15 @@
 module.exports = createFirebaseAuthDatasource;
 
-const createRefreshIdTokenHandler = require(`./refresh-id-token.js`),
-    createAuthenticateHandler = require(`./authenticate.js`),
-    createVerifyTokenHandler = require(`./verify-token.js`),
-    createRevokeTokenHandler = require(`./revoke-token.js`),
-    createCreateHandler = require(`./create.js`),
-    createUpsertHandler = require(`./upsert.js`),
-    createUpdateHandler = require(`./update.js`),
-    createDeleteHandler = require(`./delete.js`),
-    createFindHandler = require(`./find.js`),
-    createListHandler = require(`./list.js`),
+const createRefreshIdTokenHandler = require(`./token/refresh-id-token.js`),
+    createAuthenticateHandler = require(`./token/authenticate.js`),
+    createVerifyTokenHandler = require(`./token/verify-token.js`),
+    createRevokeTokenHandler = require(`./token/revoke-token.js`),
+    createCreateHandler = require(`./user/create.js`),
+    createUpsertHandler = require(`./user/upsert.js`),
+    createUpdateHandler = require(`./user/update.js`),
+    createDeleteHandler = require(`./user/delete.js`),
+    createFindHandler = require(`./user/find.js`),
+    createListHandler = require(`./user/list.js`),
     createRestClient = require(`./rest/index.js`);
 
 function createFirebaseAuthDatasource(auth, apiKey) {
@@ -34,9 +34,32 @@ function createFirebaseAuthDatasource(auth, apiKey) {
         refreshIdToken,
         list: createListHandler(auth),
         delete: createDeleteHandler(auth, find),
-        sendPasswordResetMail: (source, args) => rest.sendPasswordResetMail(
+        generateSignIn: (source, args) => auth.generateSignInWithEmailLink(
+            args.input.email
+        ),
+        generatePasswordReset: (source, args) => auth.generatePasswordResetLink(
+            args.input.email
+        ),
+        sendPasswordReset: (source, args) => rest.sendPasswordReset(
             args.input.email,
             args.input.locale
+        ),
+        verifyPasswordReset: (source, args) => rest.verifyPasswordResetCode(
+            args.input.code
+        ),
+        confirmPasswordReset: (source, args) => rest.confirmPasswordReset(
+            args.input.code,
+            args.input.password
+        ),
+        generateEmailVerification: (source, args) => auth.generateEmailVerificationLink(
+            args.input.email
+        ),
+        sendEmailVerification: (source, args) => rest.sendEmailVerification(
+            args.input.token,
+            args.input.locale
+        ),
+        confirmEmailVerification: (source, args) => rest.confirmEmailVerification(
+            args.input.code
         )
     };
 

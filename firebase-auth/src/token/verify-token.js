@@ -1,7 +1,7 @@
 module.exports = createVerifyTokenHandler;
 
 const jwt = require(`jsonwebtoken`);
-const ConsumerError = require(`./consumer-error.js`);
+const ConsumerError = require(`../consumer-error.js`);
 
 function createVerifyTokenHandler(auth, rest) {
     return verifyToken;

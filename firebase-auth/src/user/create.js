@@ -3,7 +3,7 @@ module.exports = createCreateHandler;
 const UID_SIZE = 28;
 
 const crypto = require(`crypto`);
-const ConsumerError = require(`./consumer-error.js`);
+const ConsumerError = require(`../consumer-error.js`);
 
 function createCreateHandler(auth, find, upsert) {
     return create;

@@ -1,21 +1,21 @@
-module.exports = createSendPasswordResetMail;
+module.exports = createSendOobCodeMail;
 
-const SEND_PASSWORD_RESET_MAIL_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
+const SEND_OOB_CODE_MAIL_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
     `/accounts:sendOobCode?key=${apiKey}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
-function createSendPasswordResetMail(apiKey) {
-    const sendPasswordResetMailUri = SEND_PASSWORD_RESET_MAIL_URI(apiKey);
-    return sendPasswordResetMail;
+function createSendOobCodeMail(apiKey) {
+    const sendOobCodeMailUri = SEND_OOB_CODE_MAIL_URI(apiKey);
+    return sendOobCodeMail;
 
-    async function sendPasswordResetMail(email, locale) {
+    async function sendOobCodeMail(type, email, locale) {
         try {
             const headers = locale && { 'x-firebase-Locale': locale };
-            const response = await post(sendPasswordResetMailUri, {
+            const response = await post(sendOobCodeMailUri, {
                 email,
-                requestType: `PASSWORD_RESET`
+                requestType: type
             }, headers);
             return response;
         } catch (ex) {

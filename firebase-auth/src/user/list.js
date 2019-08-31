@@ -2,7 +2,7 @@ module.exports = createListHandler;
 
 const LIMIT = 200;
 
-const ConsumerError = require(`./consumer-error.js`);
+const ConsumerError = require(`../consumer-error.js`);
 
 function createListHandler(auth) {
     return list;

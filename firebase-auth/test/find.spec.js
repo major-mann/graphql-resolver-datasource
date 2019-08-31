@@ -2,7 +2,7 @@ describe(`find`, () => {
     let find, context, auth, user;
     beforeEach(() => {
         context = require(`./context.js`);
-        const createFind = require(`../src/find.js`);
+        const createFind = require(`../src/user/find.js`);
         user = Symbol(`user`);
         auth = {
             getUser: jest.fn(() => user)

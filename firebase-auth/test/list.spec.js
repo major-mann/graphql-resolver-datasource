@@ -2,7 +2,7 @@ describe(`list`, () => {
     let createList, list, context, auth, found, find, listResult;
     beforeEach(() => {
         context = require(`./context.js`);
-        createList = require(`../src/list.js`);
+        createList = require(`../src/user/list.js`);
 
         found = Symbol(`user`);
         find = jest.fn(() => found);

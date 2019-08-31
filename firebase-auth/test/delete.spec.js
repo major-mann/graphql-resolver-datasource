@@ -2,7 +2,7 @@ describe(`delete`, () => {
     let remove, context, find, auth, found;
     beforeEach(() => {
         context = require(`./context.js`);
-        const createDelete = require(`../src/delete.js`);
+        const createDelete = require(`../src/user/delete.js`);
         found = {
             uid: Symbol(`uid`)
         };

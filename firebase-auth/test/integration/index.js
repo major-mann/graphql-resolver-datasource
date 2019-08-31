@@ -8,6 +8,8 @@ const validateCreate = require(`./validate-create.js`);
 const validateUpdate = require(`./validate-update.js`);
 const validateFind = require(`./validate-find.js`);
 const validateList = require(`./validate-list.js`);
+const validateEmailVerification = require(`./email/validate-email-verification.js`);
+const validatePasswordReset = require(`./email/validate-password-reset.js`);
 
 if (!module.parent) {
     validate();
@@ -16,7 +18,10 @@ if (!module.parent) {
 async function validate() {
     const app = firebase.initializeApp();
     const createResolvers = require(`../../src/index.js`);
-    const resolvers = createResolvers(firebase.auth());
+    const resolvers = createResolvers(
+        firebase.auth(),
+        `AIzaSyC_wM5s8E7ZO0Ty6L5em6TCbmwLoNaTCBo`
+    );
     const source = {};
     const info = {};
     const context = {
@@ -67,6 +72,22 @@ async function validate() {
             console.log(chalk.green(`List functionality has been validated`)); // eslint-disable-line no-console
         } else {
             console.log(chalk.red(`List functionality has failed validation`)); // eslint-disable-line no-console
+            return;
+        }
+
+        console.log(chalk.yellow(`Validating email verification functionality`)); // eslint-disable-line no-console
+        if (await validateEmailVerification(resolvers, source, context, info)) {
+            console.log(chalk.green(`Email verification functionality has been validated`)); // eslint-disable-line no-console
+        } else {
+            console.log(chalk.red(`Email verification functionality has failed validation`)); // eslint-disable-line no-console
+            return;
+        }
+
+        console.log(chalk.yellow(`Validating password reset functionality`)); // eslint-disable-line no-console
+        if (await validatePasswordReset(resolvers, source, context, info)) {
+            console.log(chalk.green(`Password reset functionality has been validated`)); // eslint-disable-line no-console
+        } else {
+            console.log(chalk.red(`Password reset functionality has failed validation`)); // eslint-disable-line no-console
             return;
         }
 

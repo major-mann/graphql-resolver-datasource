@@ -1,8 +1,8 @@
 describe(`upsert`, () => {
-    let createUpsert, upsert, context, exists;
+    let createUpsert, upsert, context;
     beforeEach(() => {
         context = require(`./context.js`);
-        createUpsert = require(`../src/upsert.js`);
+        createUpsert = require(`../src/user/upsert.js`);
         exists = false;
         upsert = createUpsert();
     });

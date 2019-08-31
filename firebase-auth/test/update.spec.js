@@ -2,7 +2,7 @@ describe(`update`, () => {
     let createUpdate, update, context, auth;
     beforeEach(() => {
         context = require(`./context.js`);
-        createUpdate = require(`../src/update.js`);
+        createUpdate = require(`../src/user/update.js`);
         auth = {
             updateUser: jest.fn()
         };

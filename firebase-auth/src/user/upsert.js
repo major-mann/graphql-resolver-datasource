@@ -3,7 +3,7 @@ module.exports = createUpsertHandler;
 const SALT_ROUNDS = 8;
 
 const bcrypt = require(`bcrypt`);
-const ConsumerError = require(`./consumer-error.js`);
+const ConsumerError = require(`../consumer-error.js`);
 
 function createUpsertHandler(auth, find) {
     return upsert;
