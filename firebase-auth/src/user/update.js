@@ -1,5 +1,7 @@
 module.exports = createUpdateHandler;
 
+const { shouldCallUpsert } = require(`./common.js`);
+
 function createUpdateHandler(auth, find, upsert) {
     return update;
 
@@ -11,7 +13,8 @@ function createUpdateHandler(auth, find, upsert) {
      * @throws When args.input is not an object, when the document to update cannot be found
      */
     async function update(source, args, context, info) {
-        if (!args.input.password && args.input.passwordHash) {
+        const shouldUpsert = shouldCallUpsert(args.input);
+        if (shouldUpsert) {
             const existing = await find(source, args, context, info);
             const input = {
                 ...existing,

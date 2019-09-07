@@ -4,6 +4,7 @@ const UID_SIZE = 28;
 
 const crypto = require(`crypto`);
 const ConsumerError = require(`../consumer-error.js`);
+const { shouldCallUpsert } = require(`./common.js`);
 
 function createCreateHandler(auth, find, upsert) {
     return create;
@@ -15,7 +16,7 @@ function createCreateHandler(auth, find, upsert) {
      * @param {object} args.input The document to create
      */
     async function create(source, args, context, info) {
-        const shouldUpsert = !args.input.password && args.input.passwordHash;
+        const shouldUpsert = shouldCallUpsert(args.input);
 
         if (!shouldUpsert) {
             const user = await auth.createUser(args.input);
