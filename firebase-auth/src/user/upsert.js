@@ -94,7 +94,7 @@ function createUpsertHandler(auth, find) {
         if (!input.passwordHash && input.password) {
             input.passwordHash = {
                 algorithm: `BCRYPT`,
-                hash: await bcrypt.hash(input.password, SALT_ROUNDS)
+                hash: Buffer.from(await bcrypt.hash(input.password, SALT_ROUNDS)).toString(`base64`)
             };
         }
     }
