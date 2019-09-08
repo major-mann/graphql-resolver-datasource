@@ -112,6 +112,6 @@ function createUpsertHandler(auth, find) {
         if (passwordHash.rounds > 0) {
             options.rounds = passwordHash.rounds;
         }
-        return options;
+        return { hash: options };
     }
 }
