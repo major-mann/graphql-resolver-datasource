@@ -89,6 +89,8 @@ function createUpsertHandler(auth, find) {
     }
 
     async function ensurePasswordHash(input) {
+        // TODO: This will set correctly for short passwords... but the user
+        //  won't be able to login... (will get an openbsd error about hash length...)
         if (!input.passwordHash && input.password) {
             input.passwordHash = {
                 algorithm: `BCRYPT`,
@@ -98,10 +100,18 @@ function createUpsertHandler(auth, find) {
     }
 
     function buildImportOptions(passwordHash) {
-        return passwordHash && {
-            hash: {
-                algorithm: passwordHash.algorithm
-            }
+        if (!passwordHash) {
+            return;
+        }
+        const options = {
+            algorithm: passwordHash.algorithm
         };
+        if (passwordHash.salt) {
+            options.passwordSalt = passwordHash.salt;
+        }
+        if (passwordHash.rounds > 0) {
+            options.rounds = passwordHash.rounds;
+        }
+        return options;
     }
 }
