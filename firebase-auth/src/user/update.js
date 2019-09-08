@@ -16,8 +16,16 @@ function createUpdateHandler(auth, find, upsert) {
         const shouldUpsert = shouldCallUpsert(args.input);
         if (shouldUpsert) {
             const existing = await find(source, args, context, info);
+            // We delete these since they will cause the upsert to fail,
+            //  and we have entered this block because we have a supplied
+            //  password or password hash, so these are not required.
+            // We use a copy since the returned firebase object does not allow
+            //  structure mutation
+            const copy = { ...existing };
+            delete copy.passwordHash;
+            delete copy.passwordSalt;
             const input = {
-                ...existing,
+                ...copy,
                 ...args.input
             };
             const result = await upsert(source, { input }, context, info);

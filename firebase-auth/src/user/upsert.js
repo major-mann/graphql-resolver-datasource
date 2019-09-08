@@ -20,7 +20,7 @@ function createUpsertHandler(auth, find) {
         // This will convert "password" to a BCRYPT "passwordHash"
         await ensurePasswordHash(input);
         const hashImportOptions = buildImportOptions(input.passwordHash);
-        if (input.passwordHash && typeof input.passwordHash === `object`) {
+        if (input.passwordHash) {
             input.passwordHash = input.passwordHash && Buffer.from(input.passwordHash.hash, `base64`);
         }
 
@@ -102,7 +102,7 @@ function createUpsertHandler(auth, find) {
     }
 
     function buildImportOptions(passwordHash) {
-        if (!passwordHash || typeof passwordHash !== `object`) {
+        if (!passwordHash) {
             return;
         }
         const options = {
