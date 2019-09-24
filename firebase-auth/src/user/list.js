@@ -203,9 +203,10 @@ function createListHandler(auth) {
             return findBy(() => auth.getUserByPhoneNumber(phoneNumber));
         }
 
-        function findBy(handler) {
+        async function findBy(handler) {
             try {
-                return handler();
+                const result = await handler();
+                return result;
             } catch (ex) {
                 if (ex.code === `auth/user-not-found`) {
                     return undefined;
