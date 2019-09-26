@@ -44,14 +44,26 @@ function createCreateHandler(auth, find, upsert) {
         return result;
     }
 
-    function generateUid() {
+    async function generateUid(prefix) {
         return new Promise(function promiseHandler(resolve, reject) {
             crypto.randomBytes(UID_SIZE, function onGenerated(err, buffer) {
                 if (err) {
                     reject(err);
                 } else {
-                    const uid = buffer.toString(`base64`);
-                    resolve(uid);
+                    const data = buffer.toString(`base64`);
+                    const result = data
+                        .replace(/\+/g, ``)
+                        .replace(/=/g, ``)
+                        .substr(0, UID_SIZE);
+
+                    const combined = prefix ?
+                        `${prefix}${result}` :
+                        result;
+                    if (combined.length < UID_SIZE) {
+                        generateUid(UID_SIZE, combined).then(resolve, reject);
+                    } else {
+                        resolve(combined);
+                    }
                 }
             });
         });
