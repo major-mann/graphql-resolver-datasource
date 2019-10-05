@@ -2,8 +2,6 @@ module.exports = createListHandler;
 
 const LIMIT = 200;
 
-const { FieldPath } = require(`@google-cloud/firestore`);
-
 function createListHandler(collection, createKey) {
     return list;
 
@@ -29,6 +27,8 @@ function createListHandler(collection, createKey) {
      * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
+        let hasPreviousPage = false;
+        let hasNextPage = false;
         const isTailQuery = args.input.last > args.input.first ||
             args.input.first >= 0 === false && args.input.last > 0;
 
@@ -36,7 +36,7 @@ function createListHandler(collection, createKey) {
         const { filter, order, before, after, first, last } = extractArgs(args, isTailQuery);
 
         if (first <= 0 || last <= 0) {
-            context.stat.gauge(`datasource.firestore.list.count`, 0);
+            context.stat.gauge(`datasource.mongodb.list.count`, 0);
             return emptyConnection();
         }
 
@@ -46,30 +46,28 @@ function createListHandler(collection, createKey) {
                 `is ${LIMIT}. Received ${limit} (first: ${first}. last: ${last})`);
         }
 
-        let query = collection;
+        const mongoFilter = {};
         if (filter) {
-            filter.forEach(filterEntry => query = processFilter(query, filterEntry));
+            filter.forEach(entry => addFilter(mongoFilter, entry));
         }
 
-        const finalOrderInstructions = orderInstructions(order, before, after, isTailQuery);
-        finalOrderInstructions.forEach(ord => query = query.orderBy(...ord));
+        const mongoOrder = orderInstructions(order, before, after, isTailQuery);
 
-        let hasPreviousPage = false;
-        let hasNextPage = false;
-        if (after) {
-            hasPreviousPage = true;
-            const cursorData = deserializeCursor(after);
-            query = query.startAfter(...cursorData);
-        }
         if (before) {
             hasNextPage = true;
-            const cursorData = deserializeCursor(before);
-            query = query.endBefore(...cursorData);
+            addCursorFilter(mongoFilter, mongoOrder, before, false);
         }
-        query = query.limit(limit + 1);
 
-        // Get some data
-        const results = await exec(query);
+        if (after) {
+            hasPreviousPage = true;
+            addCursorFilter(mongoFilter, mongoOrder, after, true);
+        }
+
+        const results = await collection
+            .find(mongoFilter)
+            .sort(mongoOrder)
+            .limit(limit + 1)
+            .toArray();
 
         if (results.length > limit) {
             hasNextPage = true;
@@ -92,11 +90,11 @@ function createListHandler(collection, createKey) {
         }
 
         const connection = {
-            edges: results.map(node => createEdge(finalOrderInstructions, node)),
+            edges: results.map(node => createEdge(mongoOrder, node)),
             pageInfo: { hasPreviousPage, hasNextPage }
         };
 
-        context.stat.gauge(`datasource.firestore.list.count`, results.length);
+        context.stat.gauge(`datasource.mongodb.list.count`, results.length);
         return connection;
 
         function calculateLimit() {
@@ -113,23 +111,16 @@ function createListHandler(collection, createKey) {
     }
 
     function createEdge(order, node) {
-        const cursorValue = order.length === 0 ?
+        const orderKeys = Object.keys(order);
+        const cursorValue = orderKeys.length === 0 ?
             [createKey(node)] :
-            order.map(instruction => fieldValue(instruction[0]));
+            orderKeys.map(field => node[field]);
 
         return {
             node,
             // TODO: Would be nice to do this only if the cursor is requested
             cursor: serializeCursor(cursorValue)
         };
-
-        function fieldValue(field) {
-            if (field === FieldPath.documentId()) {
-                return createKey(node);
-            } else {
-                return node[field];
-            }
-        }
     }
 
     function serializeCursor(cursor) {
@@ -155,55 +146,85 @@ function createListHandler(collection, createKey) {
         };
     }
 
-    async function exec(query) {
-        const snapshot = await query.get();
-        const records = [];
-        snapshot.forEach(record => records.push(record.data()));
-        return records;
+    function cursorValue(cursor, index) {
+        if (cursor[index] === undefined) {
+            throw new Error(`supplied cursor is for a different query`);
+        }
+        return cursor[index];
     }
 
-    function processFilter(query, filter) {
-        return query.where(filter.field, operator(filter.op), filter.value);
+    function addCursorFilter(mongoFilter, mongoOrder, cursor, after) {
+        const cursorData = deserializeCursor(cursor);
+        Object.keys(mongoOrder).forEach(
+            (field, index) => addFilter(
+                mongoFilter,
+                {
+                    field,
+                    op: operation(mongoOrder[field]),
+                    value: cursorValue(cursorData, index)
+                }
+            )
+        );
+
+        function operation(direction) {
+            if (after) {
+                direction = direction * -1;
+            }
+            return direction === 1 ?
+                `LT` :
+                `GT`;
+        }
+    }
+
+    function addFilter(mongoFilter, filter) {
+        if (mongoFilter.$and) {
+            mongoFilter.$and.push({ [filter.field]: processFilter(filter) });
+        } else if (mongoFilter[filter.field]) {
+            mongoFilter.$and = Object.keys(mongoFilter).map(
+                field => ({ [field]: mongoFilter[field] })
+            );
+            Object.keys(mongoFilter).forEach(key => {
+                if (key !== `$and`) {
+                    delete mongoFilter[key];
+                }
+            });
+            addFilter(mongoFilter, filter);
+        } else {
+            mongoFilter[filter.field] = processFilter(filter);
+        }
+    }
+
+    function processFilter(filter) {
+        switch (filter.op) {
+            case `LT`:
+                return { $lt: filter.value };
+            case `LTE`:
+                return { $lte: filter.value };
+            case `GTE`:
+                return { $gte: filter.value };
+            case `GT`:
+                return { $gt: filter.value };
+            case `EQ`:
+            case `CONTAINS`:
+                return filter.value;
+            default:
+                throw new Error(`Unsupported operation "${filter.op}"`);
+        }
     }
 
     function orderInstructions(supplied, before, after, isTailQuery) {
         supplied = supplied || [];
-        const instructions = [];
+        const instructions = {};
         if (supplied.length === 0) {
             if (before || after || isTailQuery) { // Add a default order so we can call pagination methods
-                instructions.push(createInstruction(FieldPath.documentId(), isTailQuery));
+                instructions._id = isTailQuery ? -1 : 1;
             }
         } else {
-            instructions.push(...supplied.map(item => createInstruction(item.field, item.desc)));
+            supplied.forEach(
+                instruction => instructions[instruction.field] = instruction.desc ? -1 : 1
+            );
         }
         return instructions;
-
-        function createInstruction(field, desc) {
-            if (desc) {
-                return [field, `desc`];
-            } else {
-                return [field];
-            }
-        }
-    }
-
-    function operator(op) {
-        switch (op) {
-            case `LT`:
-                return `<`;
-            case `LTE`:
-                return `<=`;
-            case `EQ`:
-                return `==`;
-            case `GTE`:
-                return `>=`;
-            case `GT`:
-                return `>`;
-            case `CONTAINS`:
-                return `CONTAINS`;
-            default:
-                throw new Error(`Unsupported operation "${op}"`);
-        }
     }
 
     function trimStart(arr, length) {

@@ -18,7 +18,6 @@ async function createDeleteValidator(resolvers, source, context, info) {
             context,
             info
         );
-
         // assert.deepStrictEqual(result, document1, `Deleted document return did not match create return`);
         assert.deepStrictEqual(result, document1);
 

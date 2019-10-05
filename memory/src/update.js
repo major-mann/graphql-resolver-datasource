@@ -17,7 +17,7 @@ function createUpdateHandler(key, shape, data) {
      * @throws When args.input is not an object, when the document to update cannot be found or when shape is supplied and
      *         args.input combined with the existing data does not match it
      */
-    function update(source, args, context) {
+    function update(source, args) {
         if (!args.input) {
             throw new Error(`No input value supplied in args`);
         }

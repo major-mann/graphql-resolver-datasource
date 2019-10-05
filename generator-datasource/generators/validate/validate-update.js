@@ -15,14 +15,12 @@ async function createUpdateValidator(resolvers, source, context, info) {
             }
         }, context, info);
         cleanup.push(document1.entertainerId);
-
         const updated = await resolvers.update(source, {
             input: {
                 entertainerId: document1.entertainerId,
                 movies: [`Dunkirk`, `The Dark Knight`, `Batman Begins`]
             }
         }, context, info);
-
         assert(updated, `Expected the updated document to be returned`);
         assert.equal(updated.entertainerId, document1.entertainerId);
         assert.equal(updated.name, document1.name);

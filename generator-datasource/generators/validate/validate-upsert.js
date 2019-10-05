@@ -16,7 +16,6 @@ async function createUpsertValidator(resolvers, source, context, info) {
             }
         }, context, info);
         cleanup.push(document1.entertainerId);
-
         assert(document1, `Expected the upserted document to be returned`);
         assert.equal(document1.entertainerId, `morgan-freeman`);
         assert.equal(document1.name, `Morgan Freeman`);

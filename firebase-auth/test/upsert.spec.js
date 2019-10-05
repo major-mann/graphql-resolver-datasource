@@ -3,7 +3,6 @@ describe(`upsert`, () => {
     beforeEach(() => {
         context = require(`./context.js`);
         createUpsert = require(`../src/user/upsert.js`);
-        exists = false;
         upsert = createUpsert();
     });
 
@@ -19,5 +18,5 @@ describe(`upsert`, () => {
             // Do nothing
         }
         expect(succeeded).toBe(false);
-    })
+    });
 });

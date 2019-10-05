@@ -1,5 +1,5 @@
 // This is prepared for the validation in the datasource generator
-module.exports = function integrationTest() {
+module.exports = async function integrationTest(test) {
     const lib = require(`../src/index.js`);
     const key = [`entertainerId`];
     const shape = {
@@ -8,5 +8,5 @@ module.exports = function integrationTest() {
         movies: true,
         nickname: true
     };
-    return lib(key, shape, []);
+    await test(lib(key, shape, []));
 };

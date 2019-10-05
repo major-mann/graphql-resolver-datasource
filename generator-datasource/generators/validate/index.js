@@ -42,8 +42,6 @@ module.exports = class extends Generator {
     }
 
     async writing() {
-        this.resolvers = require(this.answers.path)();
-
         const source = {};
         const info = {};
         const context = {
@@ -55,55 +53,56 @@ module.exports = class extends Generator {
                 gauge: () => undefined
             }
         };
+        await require(this.answers.path)(async (resolvers) => {
+            this.log(chalk.yellow(`Validating deletion functionality`));
+            if (await validateDelete(resolvers, source, context, info)) {
+                this.log(chalk.green(`Deletion functionality has been validated`));
+            } else {
+                this.log(chalk.red(`Deletion functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating deletion functionality`));
-        if (await validateDelete(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`Deletion functionality has been validated`));
-        } else {
-            this.log(chalk.red(`Deletion functionality has failed validation`));
-            return;
-        }
+            this.log(chalk.yellow(`Validating creation functionality`));
+            if (await validateCreate(resolvers, source, context, info)) {
+                this.log(chalk.green(`Creation functionality has been validated`));
+            } else {
+                this.log(chalk.red(`Creation functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating creation functionality`));
-        if (await validateCreate(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`Creation functionality has been validated`));
-        } else {
-            this.log(chalk.red(`Creation functionality has failed validation`));
-            return;
-        }
+            this.log(chalk.yellow(`Validating upsertion functionality`));
+            if (await validateUpsert(resolvers, source, context, info)) {
+                this.log(chalk.green(`Upsertion functionality has been validated`));
+            } else {
+                this.log(chalk.red(`Upsertion functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating upsertion functionality`));
-        if (await validateUpsert(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`Upsertion functionality has been validated`));
-        } else {
-            this.log(chalk.red(`Upsertion functionality has failed validation`));
-            return;
-        }
+            this.log(chalk.yellow(`Validating update functionality`));
+            if (await validateUpdate(resolvers, source, context, info)) {
+                this.log(chalk.green(`Update functionality has been validated`));
+            } else {
+                this.log(chalk.red(`Update functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating update functionality`));
-        if (await validateUpdate(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`Update functionality has been validated`));
-        } else {
-            this.log(chalk.red(`Update functionality has failed validation`));
-            return;
-        }
+            this.log(chalk.yellow(`Validating find functionality`));
+            if (await validateFind(resolvers, source, context, info)) {
+                this.log(chalk.green(`Find functionality has been validated`));
+            } else {
+                this.log(chalk.red(`Find functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating find functionality`));
-        if (await validateFind(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`Find functionality has been validated`));
-        } else {
-            this.log(chalk.red(`Find functionality has failed validation`));
-            return;
-        }
+            this.log(chalk.yellow(`Validating list functionality`));
+            if (await validateList(resolvers, source, context, info)) {
+                this.log(chalk.green(`List functionality has been validated`));
+            } else {
+                this.log(chalk.red(`List functionality has failed validation`));
+                return;
+            }
 
-        this.log(chalk.yellow(`Validating list functionality`));
-        if (await validateList(this.resolvers, source, context, info)) {
-            this.log(chalk.green(`List functionality has been validated`));
-        } else {
-            this.log(chalk.red(`List functionality has failed validation`));
-            return;
-        }
-
-        this.log(chalk.bold.green(`✓ All tests passed ✓`));
+            this.log(chalk.bold.green(`✓ All tests passed ✓`));
+        });
     }
 };

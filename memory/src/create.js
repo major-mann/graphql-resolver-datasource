@@ -16,7 +16,7 @@ function createCreateHandler(key, shape, data) {
      * @param {function} context.stat.increment The function called to increment creation stats
      * @throws When args.input is not an object, or when shape is supplied and args.input does not match it
      */
-    function create(source, args, context) {
+    function create(source, args) {
         if (!args.input || typeof args.input !== `object`) {
             throw new Error(`No input value supplied in args`);
         }

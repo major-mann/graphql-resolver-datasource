@@ -1,5 +1,5 @@
 // This is prepared for the validation in the datasource generator
-module.exports = function integrationTest() {
+module.exports = async function integrationTest(test) {
     const Firestore = require(`@google-cloud/firestore`);
     const store = new Firestore(); // Note we are relying on the env var
     /*
@@ -9,7 +9,8 @@ module.exports = function integrationTest() {
         movies: [String]
         nickname: String
     */
-    return require(`../src/index.js`)(store.collection(`tests`), createKey, autoGenerate);
+    const lib = require(`../src/index.js`)(store.collection(`tests`), createKey, autoGenerate);
+    await test(lib);
 
     function createKey(node) {
         if (node.entertainerId === undefined) {

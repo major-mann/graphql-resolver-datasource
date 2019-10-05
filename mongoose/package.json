@@ -1,0 +1,16 @@
+{
+    "name": "@major-mann/graphql-resolver-datasource-mongoose",
+    "version": "0.0.1",
+    "description": "A collection of data resolvers backed by mongoose",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "jest",
+        "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+    },
+    "author": "Calvin Mann <calvinmann@gmail+npm.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "jest": "",
+        "mongoose": "^5.7.3"
+    }
+}

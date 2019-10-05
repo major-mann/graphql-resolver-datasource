@@ -1,0 +1,16 @@
+{
+    "name": "@major-mann/graphql-resolver-datasource-mongodb",
+    "version": "0.0.1",
+    "description": "A collection of data resolvers backed by mongo",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "jest",
+        "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+    },
+    "author": "Calvin Mann <calvinmann@gmail+npm.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "jest": "",
+        "mongodb": "^3.3.2"
+    }
+}
