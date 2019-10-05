@@ -13,7 +13,7 @@ function createTokenCreationHandler(auth, rest) {
         const customToken = await auth.createCustomToken(args.input.uid);
         const tokenData = await rest.verifyCustomToken(customToken);
         if (tokenData) {
-            tokenData.uid = tokenData.userId;
+            tokenData.uid = args.input.uid;
             delete tokenData.userId;
         }
         return tokenData;
