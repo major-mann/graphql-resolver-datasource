@@ -1,7 +1,7 @@
 module.exports = createVerifyCustomToken;
 
-const VERIFY_CUSTOM_TOKEN_URI = apiKey => `https://www.googleapis.com/identitytoolkit/v3` +
-    `/relyingparty/verifyCustomToken?key=${apiKey}`;
+const VERIFY_CUSTOM_TOKEN_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
+    `/accounts:signInWithCustomToken?key=${apiKey}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
