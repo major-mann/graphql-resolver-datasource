@@ -2,6 +2,7 @@ module.exports = validate;
 
 const firebase = require(`firebase-admin`);
 const chalk = require(`chalk`);
+const minimist = require(`minimist`);
 
 const validateDelete = require(`./validate-delete.js`);
 const validateCreate = require(`./validate-create.js`);
@@ -12,15 +13,21 @@ const validateEmailVerification = require(`./email/validate-email-verification.j
 const validatePasswordReset = require(`./email/validate-password-reset.js`);
 
 if (!module.parent) {
-    validate();
+    const argv = minimist(process.argv.slice(2));
+    if (!argv.key) {
+        // eslint-disable-next-line no-console
+        console.error(`firebase auth web api key MUST be supplied. (--key=<api key>)`);
+        return;
+    }
+    validate(argv.key);
 }
 
-async function validate() {
+async function validate(apiKey) {
     const app = firebase.initializeApp();
     const createResolvers = require(`../../src/index.js`);
     const resolvers = createResolvers(
         firebase.auth(),
-        `AIzaSyC_wM5s8E7ZO0Ty6L5em6TCbmwLoNaTCBo`
+        apiKey
     );
     const source = {};
     const info = {};
