@@ -1,6 +1,6 @@
 {
     "name": "@major-mann/graphql-resolver-datasource-firebase-auth",
-    "version": "0.5.4",
+    "version": "0.5.5",
     "description": "A collection of data resolvers backed by firebase-auth",
     "main": "src/index.js",
     "scripts": {
@@ -15,6 +15,6 @@
     },
     "dependencies": {
         "bcrypt": "^3.0.6",
-        "firebase-admin": "^8.3.0"
+        "firebase-admin": "^8.7.0"
     }
 }

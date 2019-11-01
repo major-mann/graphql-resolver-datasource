@@ -12,7 +12,7 @@ function createSendOobCodeMail(apiKey) {
 
     async function sendOobCodeMail(type, email, locale) {
         try {
-            const headers = locale && { 'x-firebase-Locale': locale };
+            const headers = locale && { 'x-firebase-locale': locale };
             const response = await post(sendOobCodeMailUri, {
                 email,
                 requestType: type

@@ -1,6 +1,6 @@
 module.exports = createUpdateHandler;
 
-const { shouldCallUpsert } = require(`./common.js`);
+const { shouldCallUpsert, copyUser } = require(`./common.js`);
 
 function createUpdateHandler(auth, find, upsert) {
     return update;
@@ -19,13 +19,10 @@ function createUpdateHandler(auth, find, upsert) {
             // We delete these since they will cause the upsert to fail,
             //  and we have entered this block because we have a supplied
             //  password or password hash, so these are not required.
-            // We use a copy since the returned firebase object does not allow
-            //  structure mutation
-            const copy = { ...existing };
-            delete copy.passwordHash;
-            delete copy.passwordSalt;
+            delete existing.passwordHash;
+            delete existing.passwordSalt;
             const input = {
-                ...copy,
+                ...existing,
                 ...args.input
             };
             const result = await upsert(source, { input }, context, info);
@@ -38,7 +35,7 @@ function createUpdateHandler(auth, find, upsert) {
                     args.input.customClaims
                 )
             ]);
-            return user;
+            return copyUser(user);
         }
     }
 

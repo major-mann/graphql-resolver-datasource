@@ -1,4 +1,8 @@
-module.exports = function createDeleteHandler(auth, find) {
+module.exports = createDeleteHandler;
+
+const { copyUser } = require(`./common.js`);
+
+function createDeleteHandler(auth, find) {
     return remove;
 
     /**
@@ -17,7 +21,7 @@ module.exports = function createDeleteHandler(auth, find) {
         if (user) {
             await auth.deleteUser(user.uid);
             context.stat.increment(`datasource.firebase-auth.delete.found`);
-            return user;
+            return copyUser(user);
         } else {
             context.stat.increment(`datasource.firebase-auth.delete.missing`);
             return undefined;

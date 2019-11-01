@@ -1,4 +1,8 @@
-module.exports = function createFindHandler(auth) {
+module.exports = createFindHandler;
+
+const { copyUser } = require(`./common.js`);
+
+function createFindHandler(auth) {
     return find;
 
     /**
@@ -11,7 +15,7 @@ module.exports = function createFindHandler(auth) {
     async function find(source, args) {
         try {
             let user = await auth.getUser(args.input.uid);
-            return user;
+            return copyUser(user);
         } catch (ex) {
             if (ex.code === `auth/user-not-found`) {
                 return undefined;
@@ -20,4 +24,4 @@ module.exports = function createFindHandler(auth) {
             }
         }
     }
-};
+}

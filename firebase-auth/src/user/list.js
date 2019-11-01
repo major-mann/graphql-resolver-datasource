@@ -2,7 +2,8 @@ module.exports = createListHandler;
 
 const LIMIT = 200;
 
-const ConsumerError = require(`../consumer-error.js`);
+const ConsumerError = require(`../consumer-error.js`),
+    { copyUser } = require(`./common.js`);
 
 function createListHandler(auth) {
     return list;
@@ -101,14 +102,7 @@ function createListHandler(auth) {
                             serializeCursor({ list: listResult.pageToken, offset: 0 }) :
                             serializeCursor({ list: cursor && cursor.list, offset: index + 1 });
                         return {
-                            node: {
-                                uid: user.uid,
-                                email: user.email,
-                                emailVerified: user.emailVerified,
-                                phoneNumber: user.phoneNumber,
-                                disabled: user.disabled,
-                                customClaims: user.customClaims
-                            },
+                            node: copyUser(user),
                             cursor: edgeCursor
                         };
                     } else {
@@ -172,13 +166,7 @@ function createListHandler(auth) {
                 function buildEdge(user) {
                     // TODO: Can we avoid building the cursor based on requested fields?
                     return {
-                        node: {
-                            uid: user.uid,
-                            email: user.email,
-                            emailVerified: user.emailVerified,
-                            phoneNumber: user.phoneNumber,
-                            disabled: user.disabled
-                        },
+                        node: copyUser(user),
                         cursor: serializeCursor({ field: `uid`, value: user.uid })
                     };
                 }
