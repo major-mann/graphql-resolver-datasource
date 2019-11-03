@@ -27,5 +27,4 @@ function createDeleteHandler(auth, find) {
             return undefined;
         }
     }
-
-};
+}
