@@ -11,6 +11,6 @@
     "license": "MIT",
     "devDependencies": {
         "jest": "",
-        "mongoose": "^5.7.3"
+        "mongoose": "^5.7.5"
     }
 }
