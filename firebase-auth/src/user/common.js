@@ -16,17 +16,8 @@ function shouldCallUpsert(input) {
 }
 
 function copyUser(user) {
-    if (user) {
-        return {
-            uid: user.uid,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            phoneNumber: user.phoneNumber,
-            disabled: user.disabled,
-            customClaims: user.customClaims,
-            passwordHash: user.passwordHash,
-            passwordSalt: user.passwordSalt
-        };
+    if (user && typeof user.toJSON === `function`) {
+        return user.toJSON();
     } else {
         return user;
     }
