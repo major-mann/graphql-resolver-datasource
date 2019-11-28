@@ -93,11 +93,11 @@ function createPageTokenLister({ sourceName, lookup, listHandler, convertOut }) 
             let current, users;
 
             if (cursor) {
-                users = [await lookup(cursor.field, cursor.value)]
+                users = [await lookup(cursor.field, cursor.value, args)]
                     .filter(user => user);
             } else {
                 current = filter.shift();
-                users = [await lookup(current.field, current.value)]
+                users = [await lookup(current.field, current.value, args)]
                     .filter(user => user);
             }
 
