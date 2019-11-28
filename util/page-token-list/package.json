@@ -1,0 +1,11 @@
+{
+    "name": "@major-mann/graphql-resolver-datasource-util-page-token-list",
+    "version": "0.0.1",
+    "description": "A utility for paging over single page tokens",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "author": "Calvin Mann <calvinmann@gmail+npm.com>",
+    "license": "MIT"
+}
