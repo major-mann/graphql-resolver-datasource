@@ -2,18 +2,19 @@ module.exports = createDeleteValidator;
 
 const assert = require(`assert`);
 
-async function createDeleteValidator(resolvers, source, context, info) {
+async function createDeleteValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     try {
         const document1 = await resolvers.create(source, {
             input: {
+                tenantId,
                 email: `clint-eastwood@example.com`
             }
         }, context, info);
 
         const result = await resolvers.delete(
             source,
-            { input: { uid: document1.uid } },
+            { input: { uid: document1.uid, tenantId } },
             context,
             info
         );
@@ -23,7 +24,7 @@ async function createDeleteValidator(resolvers, source, context, info) {
 
         const remaining = await resolvers.find(
             source,
-            { input: { uid: document1.uid } },
+            { input: { uid: document1.uid, tenantId } },
             context,
             info
         );

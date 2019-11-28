@@ -1,19 +1,20 @@
 module.exports = createConfirmPasswordReset;
 
 const CONFIRM_PASSWORD_RESET_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
-    `/accounts:resetPassword?key=${apiKey}`;
+    `/accounts:resetPassword?key=${encodeURIComponent(apiKey)}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createConfirmPasswordReset(apiKey) {
-    const confirmPasswordResetUri = CONFIRM_PASSWORD_RESET_URI(apiKey);
     return confirmPasswordReset;
 
-    async function confirmPasswordReset(oobCode, password) {
+    async function confirmPasswordReset(tenantId, oobCode, password) {
+        const confirmPasswordResetUri = CONFIRM_PASSWORD_RESET_URI(apiKey);
         try {
             const response = await post(confirmPasswordResetUri, {
                 oobCode,
+                tenantId,
                 newPassword: password
             });
             return response;

@@ -1,8 +1,8 @@
 module.exports = createUpdateHandler;
 
-const { shouldCallUpsert, copyUser } = require(`./common.js`);
+const { shouldCallUpsert, plainUserObject, sanitizeUserInput } = require(`./common.js`);
 
-function createUpdateHandler(auth, find, upsert) {
+function createUpdateHandler(loadAuth, find, upsert) {
     return update;
 
     /**
@@ -13,6 +13,7 @@ function createUpdateHandler(auth, find, upsert) {
      * @throws When args.input is not an object, when the document to update cannot be found
      */
     async function update(source, args, context, info) {
+        const auth = await loadAuth(args.input.tenantId);
         const shouldUpsert = shouldCallUpsert(args.input);
         if (shouldUpsert) {
             const existing = await find(source, args, context, info);
@@ -29,13 +30,13 @@ function createUpdateHandler(auth, find, upsert) {
             return result;
         } else {
             const [user] = await Promise.all([
-                auth.updateUser(args.input.uid, args.input),
+                auth.updateUser(args.input.uid, sanitizeUserInput(args.input)),
                 args.input.customClaims && auth.setCustomUserClaims(
                     args.input.uid,
                     args.input.customClaims
                 )
             ]);
-            return copyUser(user);
+            return plainUserObject(user);
         }
     }
 

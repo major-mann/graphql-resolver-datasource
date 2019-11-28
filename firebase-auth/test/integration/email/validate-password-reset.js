@@ -7,7 +7,7 @@ const assert = require(`assert`);
 const { URL } = require(`url`);
 const uuid = require(`uuid`);
 
-async function createPasswordResetValidator(resolvers, source, context, info) {
+async function createPasswordResetValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     const password = uuid.v4();
     const cleanup = [];
@@ -16,7 +16,8 @@ async function createPasswordResetValidator(resolvers, source, context, info) {
         const document1 = await resolvers.create(source, {
             input: {
                 email: EMAIL,
-                password
+                password,
+                tenantId
             }
         }, context, info);
         cleanup.push(document1.uid);
@@ -40,6 +41,7 @@ async function createPasswordResetValidator(resolvers, source, context, info) {
             source,
             {
                 input: {
+                    tenantId,
                     code: linkCode,
                     password: password2
                 }
@@ -52,7 +54,9 @@ async function createPasswordResetValidator(resolvers, source, context, info) {
             source,
             {
                 input: {
-                    email: document1.email, password: password2
+                    tenantId,
+                    email: document1.email,
+                    password: password2
                 }
             },
             context,
@@ -65,7 +69,7 @@ async function createPasswordResetValidator(resolvers, source, context, info) {
     }
     await Promise.all(
         cleanup.map(
-            uid => resolvers.delete(source, { input: { uid } }, context, info)
+            uid => resolvers.delete(source, { input: { tenantId, uid } }, context, info)
         )
     );
     return result;

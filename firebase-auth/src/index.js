@@ -1,6 +1,12 @@
 module.exports = createFirebaseAuthDatasource;
 
-const createRefreshIdTokenHandler = require(`./token/refresh-id-token.js`),
+const STATS_IGNORE = [`dispose`];
+
+const uuid = require(`uuid`);
+const firebase = require(`firebase-admin`);
+
+const loadWebConfig = require(`./util/load-web-config.js`),
+    createRefreshIdTokenHandler = require(`./token/refresh-id-token.js`),
     createAuthenticateHandler = require(`./token/authenticate.js`),
     createCreateTokenHandler = require(`./token/create-token.js`),
     createVerifyTokenHandler = require(`./token/verify-token.js`),
@@ -11,63 +17,72 @@ const createRefreshIdTokenHandler = require(`./token/refresh-id-token.js`),
     createDeleteHandler = require(`./user/delete.js`),
     createFindHandler = require(`./user/find.js`),
     createListHandler = require(`./user/list.js`),
-    createRestClient = require(`./rest/index.js`);
+    createRestClient = require(`./rest/index.js`),
+    createOutOfBandHandlers = require(`./oob-actions.js`);
 
-function createFirebaseAuthDatasource(auth, apiKey) {
+async function createFirebaseAuthDatasource(serviceAccount, firebaseConfig) {
+    const appOptions = {};
+    appOptions.credential = firebase.credential.cert(serviceAccount);
+    if (firebaseConfig) {
+        Object.assign(appOptions, firebaseConfig);
+    }
+    const app = firebase.initializeApp(appOptions, `datasource:${uuid.v4().substr(-12)}`);
+    const tenantManager = app.auth().tenantManager();
+
+    const { apiKey } = await loadWebConfig(serviceAccount);
+    const loadAuth = tenantId => tenantManager.authForTenant(tenantId);
+
     const rest = createRestClient(apiKey);
     const authenticate = createAuthenticateHandler(rest);
-    const revokeToken = createRevokeTokenHandler(auth, rest);
-    const verifyToken = createVerifyTokenHandler(auth, rest);
+    const revokeToken = createRevokeTokenHandler(loadAuth, rest);
+    const verifyToken = createVerifyTokenHandler(loadAuth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
-    const createToken = createCreateTokenHandler(auth, rest);
-    const find = createFindHandler(auth);
-    const upsert = createUpsertHandler(auth, find);
-    const create = createCreateHandler(auth, find, upsert);
-    const update = createUpdateHandler(auth, find, upsert);
+    const createToken = createCreateTokenHandler(serviceAccount, rest);
+    const find = createFindHandler(loadAuth);
+    const upsert = createUpsertHandler(loadAuth, find);
+    const create = createCreateHandler(loadAuth, find, upsert);
+    const update = createUpdateHandler(loadAuth, find, upsert);
+
+    const {
+        generateSignIn,
+        generatePasswordReset,
+        generateEmailVerification,
+        sendPasswordReset,
+        verifyPasswordReset,
+        confirmPasswordReset,
+        sendEmailVerification,
+        confirmEmailVerification
+    } = createOutOfBandHandlers(loadAuth, rest);
 
     const resolvers = {
         find,
         create,
         update,
         upsert,
+        dispose,
         createToken,
         revokeToken,
         verifyToken,
         authenticate,
         refreshIdToken,
-        list: createListHandler(auth),
-        delete: createDeleteHandler(auth, find),
-        generateSignIn: (source, args) => auth.generateSignInWithEmailLink(
-            args.input.email
-        ),
-        generatePasswordReset: (source, args) => auth.generatePasswordResetLink(
-            args.input.email
-        ),
-        sendPasswordReset: (source, args) => rest.sendPasswordReset(
-            args.input.email,
-            args.input.locale
-        ),
-        verifyPasswordReset: (source, args) => rest.verifyPasswordResetCode(
-            args.input.code
-        ),
-        confirmPasswordReset: (source, args) => rest.confirmPasswordReset(
-            args.input.code,
-            args.input.password
-        ),
-        generateEmailVerification: (source, args) => auth.generateEmailVerificationLink(
-            args.input.email
-        ),
-        sendEmailVerification: (source, args) => rest.sendEmailVerification(
-            args.input.token,
-            args.input.locale
-        ),
-        confirmEmailVerification: (source, args) => rest.confirmEmailVerification(
-            args.input.code
-        )
+        generateSignIn,
+        sendPasswordReset,
+        verifyPasswordReset,
+        confirmPasswordReset,
+        generatePasswordReset,
+        sendEmailVerification,
+        confirmEmailVerification,
+        generateEmailVerification,
+        list: createListHandler(loadAuth),
+        delete: createDeleteHandler(loadAuth, find)
     };
 
     return Object.keys(resolvers).reduce((result, name) => {
-        result[name] = statsWrap(name, resolvers[name]);
+        if (STATS_IGNORE.includes(name)) {
+            result[name] = resolvers[name];
+        } else {
+            result[name] = statsWrap(name, resolvers[name]);
+        }
         return result;
     }, {});
 
@@ -89,5 +104,9 @@ function createFirebaseAuthDatasource(auth, apiKey) {
                 throw ex;
             }
         };
+    }
+
+    function dispose() {
+        app.delete();
     }
 }

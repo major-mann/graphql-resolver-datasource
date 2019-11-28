@@ -1,8 +1,8 @@
 module.exports = createDeleteHandler;
 
-const { copyUser } = require(`./common.js`);
+const { plainUserObject } = require(`./common.js`);
 
-function createDeleteHandler(auth, find) {
+function createDeleteHandler(loadAuth, find) {
     return remove;
 
     /**
@@ -19,9 +19,10 @@ function createDeleteHandler(auth, find) {
     async function remove(source, args, context, info) {
         const user = await find(source, args, context, info);
         if (user) {
+            const auth = await loadAuth(args.input.tenantId);
             await auth.deleteUser(user.uid);
             context.stat.increment(`datasource.firebase-auth.delete.found`);
-            return copyUser(user);
+            return plainUserObject(user);
         } else {
             context.stat.increment(`datasource.firebase-auth.delete.missing`);
             return undefined;

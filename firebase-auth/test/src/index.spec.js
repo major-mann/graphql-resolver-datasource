@@ -1,8 +1,8 @@
 describe(`index`, () => {
     let createDatasource, dataSource;
-    beforeEach(() => {
-        createDatasource = require(`../src/index.js`);
-        dataSource = createDatasource();
+    beforeEach(async () => {
+        createDatasource = require(`../../src/index.js`);
+        dataSource = await createDatasource({ });
     });
 
     it(`should be return an object`, () => {

@@ -7,14 +7,15 @@ const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createSendOobCodeMail(apiKey) {
-    const sendOobCodeMailUri = SEND_OOB_CODE_MAIL_URI(apiKey);
     return sendOobCodeMail;
 
-    async function sendOobCodeMail(type, email, locale) {
+    async function sendOobCodeMail(tenantId, type, email, locale) {
+        const sendOobCodeMailUri = SEND_OOB_CODE_MAIL_URI(apiKey);
         try {
             const headers = locale && { 'x-firebase-locale': locale };
             const response = await post(sendOobCodeMailUri, {
                 email,
+                tenantId,
                 requestType: type
             }, headers);
             return response;

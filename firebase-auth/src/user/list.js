@@ -3,9 +3,9 @@ module.exports = createListHandler;
 const LIMIT = 200;
 
 const ConsumerError = require(`../consumer-error.js`),
-    { copyUser } = require(`./common.js`);
+    { plainUserObject } = require(`./common.js`);
 
-function createListHandler(auth) {
+function createListHandler(loadAuth) {
     return list;
 
     /**
@@ -30,6 +30,7 @@ function createListHandler(auth) {
      * @param {object} context.stat.gauge The stat function to monitor values over time
      */
     async function list(source, args, context) {
+        const auth = await loadAuth(args.input.tenantId);
         const { first, last, after, before, filter, order } = (args.input || {});
         if (first <= 0 || last <= 0) {
             context.stat.gauge(`datasource.firebase-auth.list.count`, 0);
@@ -102,7 +103,7 @@ function createListHandler(auth) {
                             serializeCursor({ list: listResult.pageToken, offset: 0 }) :
                             serializeCursor({ list: cursor && cursor.list, offset: index + 1 });
                         return {
-                            node: copyUser(user),
+                            node: plainUserObject(user),
                             cursor: edgeCursor
                         };
                     } else {
@@ -166,7 +167,7 @@ function createListHandler(auth) {
                 function buildEdge(user) {
                     // TODO: Can we avoid building the cursor based on requested fields?
                     return {
-                        node: copyUser(user),
+                        node: plainUserObject(user),
                         cursor: serializeCursor({ field: `uid`, value: user.uid })
                     };
                 }

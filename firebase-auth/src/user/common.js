@@ -1,6 +1,7 @@
 module.exports = {
-    copyUser,
-    shouldCallUpsert
+    sanitizeUserInput,
+    shouldCallUpsert,
+    plainUserObject
 };
 
 const FIREBASE_PASSWORD_LIMIT = 6;
@@ -15,10 +16,16 @@ function shouldCallUpsert(input) {
     }
 }
 
-function copyUser(user) {
+function plainUserObject(user) {
     if (user && typeof user.toJSON === `function`) {
         return user.toJSON();
     } else {
         return user;
     }
+}
+
+function sanitizeUserInput(user) {
+    user = { ...user };
+    delete user.tenantId;
+    return user;
 }

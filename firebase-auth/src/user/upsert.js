@@ -5,7 +5,9 @@ const SALT_ROUNDS = 8;
 const bcrypt = require(`bcrypt`);
 const ConsumerError = require(`../consumer-error.js`);
 
-function createUpsertHandler(auth, find) {
+const { sanitizeUserInput } = require(`./common.js`);
+
+function createUpsertHandler(loadAuth, find) {
     return upsert;
 
     /**
@@ -15,7 +17,8 @@ function createUpsertHandler(auth, find) {
      * @param {object} args.input The user information
      */
     async function upsert(source, args, context, info) {
-        const input = { ...args.input };
+        const auth = await loadAuth(args.input.tenantId);
+        const input = sanitizeUserInput(args.input);
 
         // This will convert "password" to a BCRYPT "passwordHash"
         await ensurePasswordHash(input);
@@ -28,7 +31,7 @@ function createUpsertHandler(auth, find) {
         //  We aren't using it in that manner, and it would deviate from
         //  the expected behaviour (If we get to feature completeness the
         //  import function should be exposed allowing the functionality
-        //  through an alternate vector
+        //  through an alternate vector)
         await ensureUniqueEmailPhone();
 
         const importResult = await auth.importUsers([input], hashImportOptions);
@@ -103,7 +106,7 @@ function createUpsertHandler(auth, find) {
 
     function buildImportOptions(passwordHash) {
         if (!passwordHash) {
-            return;
+            return undefined;
         }
         const options = {
             algorithm: passwordHash.algorithm

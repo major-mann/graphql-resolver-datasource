@@ -1,18 +1,19 @@
 module.exports = createConfirmEmailVerify;
 
 const CONFIRM_EMAIL_VERIFY_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
-    `/accounts:update?key=${apiKey}`;
+    `/accounts:update?key=${encodeURIComponent(apiKey)}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createConfirmEmailVerify(apiKey) {
-    const confirmEmailVerifyUri = CONFIRM_EMAIL_VERIFY_URI(apiKey);
     return confirmEmailVerify;
 
-    async function confirmEmailVerify(oobCode) {
+    async function confirmEmailVerify(tenantId, oobCode) {
+        const confirmEmailVerifyUri = CONFIRM_EMAIL_VERIFY_URI(apiKey);
         try {
             const response = await post(confirmEmailVerifyUri, {
+                tenantId,
                 oobCode
             });
             return response;

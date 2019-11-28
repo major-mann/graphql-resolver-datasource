@@ -1,8 +1,8 @@
 describe(`list`, () => {
     let createList, list, context, auth, found, find, listResult;
     beforeEach(() => {
-        context = require(`./context.js`);
-        createList = require(`../src/user/list.js`);
+        context = require(`../../context.js`);
+        createList = require(`../../../src/user/list.js`);
 
         found = Symbol(`user`);
         find = jest.fn(() => found);
@@ -46,11 +46,20 @@ describe(`list`, () => {
             getUserByEmail: jest.fn(),
             getUserByPhoneNumber: jest.fn()
         };
-        list = createList(auth, find);
+        list = createList(() => auth, find);
     });
 
     it(`should be a function`, () => {
         expect(typeof list).toBe(`function`);
+    });
+
+    it(`should pass the supplied tenant id to the loadAuth function`, async () => {
+        const tenantId = `test-tenant-id`;
+        const loadAuth = jest.fn(() => auth);
+        list = createList(loadAuth, find);
+        await list(undefined, { input: { tenantId } }, context);
+        expect(loadAuth.mock.calls.length).toBe(1);
+        expect(loadAuth.mock.calls[0][0]).toEqual(tenantId);
     });
 
     it(`should return a connection structure`, async () => {

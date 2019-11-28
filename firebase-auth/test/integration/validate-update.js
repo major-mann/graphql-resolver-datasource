@@ -2,13 +2,14 @@ module.exports = createUpdateValidator;
 
 const assert = require(`assert`);
 
-async function createUpdateValidator(resolvers, source, context, info) {
+async function createUpdateValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     const cleanup = [];
     let result;
     try {
         const document1 = await resolvers.create(source, {
             input: {
+                tenantId,
                 email: `michael-cain@example.com`,
                 disabled: true
             }
@@ -17,6 +18,7 @@ async function createUpdateValidator(resolvers, source, context, info) {
 
         const updated = await resolvers.update(source, {
             input: {
+                tenantId,
                 uid: document1.uid,
                 disabled: false
             }
@@ -34,7 +36,7 @@ async function createUpdateValidator(resolvers, source, context, info) {
     }
     await Promise.all(
         cleanup.map(
-            uid => resolvers.delete(source, { input: { uid } }, context, info)
+            uid => resolvers.delete(source, { input: { uid, tenantId } }, context, info)
         )
     );
     return result;

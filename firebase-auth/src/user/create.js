@@ -4,9 +4,9 @@ const UID_SIZE = 28;
 
 const crypto = require(`crypto`);
 const ConsumerError = require(`../consumer-error.js`);
-const { shouldCallUpsert, copyUser } = require(`./common.js`);
+const { shouldCallUpsert, plainUserObject, sanitizeUserInput } = require(`./common.js`);
 
-function createCreateHandler(auth, find, upsert) {
+function createCreateHandler(loadAuth, find, upsert) {
     return create;
 
     /**
@@ -17,13 +17,15 @@ function createCreateHandler(auth, find, upsert) {
      */
     async function create(source, args, context, info) {
         const shouldUpsert = shouldCallUpsert(args.input);
-
         if (!shouldUpsert) {
-            const user = await auth.createUser(args.input);
+            const auth = await loadAuth(args.input.tenantId);
+            const user = await auth.createUser(
+                sanitizeUserInput(args.input)
+            );
             if (args.input.customClaims) {
                 await auth.setCustomUserClaims(user.uid, args.input.customClaims);
             }
-            return copyUser(user);
+            return plainUserObject(user);
         }
 
         args = { ...args, input: { ...args.input } };

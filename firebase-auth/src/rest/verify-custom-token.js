@@ -1,19 +1,20 @@
 module.exports = createVerifyCustomToken;
 
 const VERIFY_CUSTOM_TOKEN_URI = apiKey => `https://identitytoolkit.googleapis.com/v1` +
-    `/accounts:signInWithCustomToken?key=${apiKey}`;
+    `/accounts:signInWithCustomToken?key=${encodeURIComponent(apiKey)}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createVerifyCustomToken(apiKey) {
-    const verifyCustomTokenUri = VERIFY_CUSTOM_TOKEN_URI(apiKey);
     return verifyCustomToken;
 
-    async function verifyCustomToken(token) {
+    async function verifyCustomToken(tenantId, token) {
+        const verifyCustomTokenUri = VERIFY_CUSTOM_TOKEN_URI(apiKey);
         try {
             const response = await post(verifyCustomTokenUri, {
                 token,
+                tenantId,
                 returnSecureToken: true
             });
             return response;

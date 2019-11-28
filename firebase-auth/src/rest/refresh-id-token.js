@@ -1,20 +1,21 @@
 module.exports = createRefreshIdToken;
 
 const REFRESH_ID_TOKEN_URI = apiKey => `https://securetoken.googleapis.com/v1/token` +
-    `?key=${apiKey}`;
+    `?key=${encodeURIComponent(apiKey)}`;
 
 const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createRefreshIdToken(apiKey) {
-    const refreshIdTokenUri = REFRESH_ID_TOKEN_URI(apiKey);
     return refreshIdToken;
 
-    async function refreshIdToken(refreshToken) {
+    async function refreshIdToken(tenantId, refreshToken) {
+        const refreshIdTokenUri = REFRESH_ID_TOKEN_URI(apiKey);
         try {
             const response = await post(refreshIdTokenUri, {
                 grant_type: `refresh_token`,
-                refresh_token: refreshToken
+                refresh_token: refreshToken,
+                tenantId
             });
             return response;
         } catch (ex) {

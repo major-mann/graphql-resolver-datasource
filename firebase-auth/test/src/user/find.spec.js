@@ -1,13 +1,13 @@
 describe(`find`, () => {
-    let find, context, auth, user;
+    let find, context, auth, user, createFind;
     beforeEach(() => {
-        context = require(`./context.js`);
-        const createFind = require(`../src/user/find.js`);
+        context = require(`../../context.js`);
+        createFind = require(`../../../src/user/find.js`);
         user = Symbol(`user`);
         auth = {
             getUser: jest.fn(() => user)
         };
-        find = createFind(auth);
+        find = createFind(() => auth);
     });
 
     it(`should be a function`, () => {
@@ -21,5 +21,13 @@ describe(`find`, () => {
     it(`should return a record that matches the supplied input if one exists`, async () => {
         const record = await find(undefined, { input: { foo: 2, bar: 1 } }, context);
         expect(record).toBe(user);
+    });
+    it(`should pass the supplied tenant id to the loadAuth function`, async () => {
+        const tenantId = `test-tenant-id`;
+        const loadAuth = jest.fn(() => auth);
+        find = createFind(loadAuth, find);
+        await find(undefined, { input: { uid: 123, tenantId } }, context);
+        expect(loadAuth.mock.calls.length).toBe(1);
+        expect(loadAuth.mock.calls[0][0]).toEqual(tenantId);
     });
 });

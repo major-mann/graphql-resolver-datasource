@@ -2,13 +2,14 @@ module.exports = createFindValidator;
 
 const assert = require(`assert`);
 
-async function createFindValidator(resolvers, source, context, info) {
+async function createFindValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     const cleanup = [];
     let result;
     try {
         const document1 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `clint-eastwood`,
                 email: `clint-eastwood@example.com`
             }
@@ -17,6 +18,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         const document2 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `morgan-freeman`,
                 email: `morgan-freeman@example.com`
             }
@@ -25,6 +27,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         const document3 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `michael-cain`,
                 email: `michael-cain@example.com`
             }
@@ -33,7 +36,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         let succeeded = false;
         try {
-            await resolvers.find(source, { input: { email: `michael-cain@example.com` } }, context, info);
+            await resolvers.find(source, { input: { email: `michael-cain@example.com`, tenantId } }, context, info);
             succeeded = true;
         } catch (ex) {
             // Expected failure
@@ -42,7 +45,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         const findResult1 = await resolvers.find(
             source,
-            { input: { uid: `michael-cain` } },
+            { input: { uid: `michael-cain`, tenantId } },
             context,
             info
         );
@@ -50,7 +53,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         const findResult2 = await resolvers.find(
             source,
-            { input: { uid: `clint-eastwood` } },
+            { input: { uid: `clint-eastwood`, tenantId } },
             context,
             info
         );
@@ -58,7 +61,7 @@ async function createFindValidator(resolvers, source, context, info) {
 
         const findResult3 = await resolvers.find(
             source,
-            { input: { uid: `someone-else` } },
+            { input: { uid: `someone-else`, tenantId } },
             context,
             info
         );
@@ -70,7 +73,7 @@ async function createFindValidator(resolvers, source, context, info) {
     }
     await Promise.all(
         cleanup.map(
-            uid => resolvers.delete(source, { input: { uid } }, context, info)
+            uid => resolvers.delete(source, { input: { uid, tenantId } }, context, info)
         )
     );
     return result;

@@ -2,13 +2,14 @@ module.exports = createListValidator;
 
 const assert = require(`assert`);
 
-async function createListValidator(resolvers, source, context, info) {
+async function createListValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     const cleanup = [];
     let result;
     try {
         const document1 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `clint-eastwood`,
                 email: `clint-eastwood@example.com`
             }
@@ -17,6 +18,7 @@ async function createListValidator(resolvers, source, context, info) {
 
         const document2 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `morgan-freeman`,
                 email: `morgan-freeman@example.com`
             }
@@ -25,6 +27,7 @@ async function createListValidator(resolvers, source, context, info) {
 
         const document3 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `michael-cain`,
                 email: `michael-cain@example.com`
             }
@@ -33,6 +36,7 @@ async function createListValidator(resolvers, source, context, info) {
 
         const document4 = await resolvers.create(source, {
             input: {
+                tenantId,
                 uid: `leonardo-dicaprio`,
                 email: `leonardo-dicaprio@example.com`
             }
@@ -40,7 +44,7 @@ async function createListValidator(resolvers, source, context, info) {
         cleanup.push(document4.uid);
 
         // Check no paging or filters
-        const results1 = await resolvers.list(source, { input: { } }, context, info);
+        const results1 = await resolvers.list(source, { input: { tenantId } }, context, info);
         assert.equal(results1.edges.length, 4);
         assert.equal(results1.edges[0].node.uid, `clint-eastwood`);
         assert.equal(results1.edges[1].node.uid, `leonardo-dicaprio`);
@@ -50,6 +54,7 @@ async function createListValidator(resolvers, source, context, info) {
         // Check after
         const results2 = await resolvers.list(source, {
             input: {
+                tenantId,
                 after: results1.edges[0].cursor
             }
         }, context, info);
@@ -64,6 +69,7 @@ async function createListValidator(resolvers, source, context, info) {
         // Check first
         const results5 = await resolvers.list(source, {
             input: {
+                tenantId,
                 first: 2
             }
         }, context, info);
@@ -76,6 +82,7 @@ async function createListValidator(resolvers, source, context, info) {
         // Check first bigger than last
         const results7 = await resolvers.list(source, {
             input: {
+                tenantId,
                 first: 3,
                 last: 2
             }
@@ -89,6 +96,7 @@ async function createListValidator(resolvers, source, context, info) {
         // Check after with first
         const results9 = await resolvers.list(source, {
             input: {
+                tenantId,
                 after: results1.edges[0].cursor,
                 first: 2
             }
@@ -108,6 +116,7 @@ async function createListValidator(resolvers, source, context, info) {
         // Check after with first bigger than last
         const results11 = await resolvers.list(source, {
             input: {
+                tenantId,
                 after: results1.edges[0].cursor,
                 first: 3,
                 last: 2
@@ -141,7 +150,7 @@ async function createListValidator(resolvers, source, context, info) {
     }
     await Promise.all(
         cleanup.map(
-            uid => resolvers.delete(source, { input: { uid } }, context, info)
+            uid => resolvers.delete(source, { input: { uid, tenantId } }, context, info)
         )
     );
     return result;

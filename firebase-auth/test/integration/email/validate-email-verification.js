@@ -7,7 +7,7 @@ const assert = require(`assert`);
 const { URL } = require(`url`);
 const uuid = require(`uuid`);
 
-async function createEmailVerificationValidator(resolvers, source, context, info) {
+async function createEmailVerificationValidator(resolvers, source, context, info, tenantId) {
     // TODO: Improve assertion error messages
     const password = uuid.v4();
     const cleanup = [];
@@ -16,15 +16,14 @@ async function createEmailVerificationValidator(resolvers, source, context, info
         const document1 = await resolvers.create(source, {
             input: {
                 email: EMAIL,
-                password
+                password,
+                tenantId
             }
         }, context, info);
         cleanup.push(document1.uid);
 
         assert(document1, `Expected the created document to be returned`);
         assert.equal(document1.email, EMAIL);
-
-        // TODO: How to validate this?
 
         const link = await resolvers.generateEmailVerification(
             source,
@@ -37,7 +36,7 @@ async function createEmailVerificationValidator(resolvers, source, context, info
 
         await resolvers.confirmEmailVerification(
             source,
-            { input: { code: linkCode } },
+            { input: { tenantId, code: linkCode } },
             context,
             info
         );
@@ -48,7 +47,7 @@ async function createEmailVerificationValidator(resolvers, source, context, info
     }
     await Promise.all(
         cleanup.map(
-            uid => resolvers.delete(source, { input: { uid } }, context, info)
+            uid => resolvers.delete(source, { input: { tenantId, uid } }, context, info)
         )
     );
     return result;

@@ -7,14 +7,15 @@ const ConsumerError = require(`../consumer-error.js`);
 const { post } = require(`./common.js`);
 
 function createVerifyPassword(apiKey) {
-    const verifyPasswordUri = VERIFY_PASSWORD_URI(apiKey);
     return verifyPassword;
 
-    async function verifyPassword(email, password) {
+    async function verifyPassword(tenantId, email, password) {
+        const verifyPasswordUri = VERIFY_PASSWORD_URI(apiKey);
         try {
             const response = await post(verifyPasswordUri, {
                 email,
                 password,
+                tenantId,
                 returnSecureToken: true
             });
             return response;

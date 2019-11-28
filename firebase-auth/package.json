@@ -1,10 +1,13 @@
 {
     "name": "@major-mann/graphql-resolver-datasource-firebase-auth",
-    "version": "0.5.6",
+    "version": "0.6.0",
     "description": "A collection of data resolvers backed by firebase-auth",
     "main": "src/index.js",
     "scripts": {
-        "test": "jest"
+        "lint": "eslint .",
+        "test": "jest",
+        "test:cover": "jest --coverage",
+        "test:integration": "node test/integration/index.js"
     },
     "author": "Calvin Mann <calvinmann@gmail+npm.com>",
     "license": "MIT",
@@ -15,6 +18,9 @@
     },
     "dependencies": {
         "bcrypt": "^3.0.6",
-        "firebase-admin": "^8.7.0"
+        "firebase-admin": "^8.8.0",
+        "googleapis": "^45.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "node-fetch": "^2.6.0"
     }
 }

@@ -1,12 +1,12 @@
 describe(`create`, () => {
     let createCreate, create, context, auth;
     beforeEach(() => {
-        context = require(`./context.js`);
-        createCreate = require(`../src/user/create.js`);
+        context = require(`../../context.js`);
+        createCreate = require(`../../../src/user/create.js`);
         auth = {
             createUser: jest.fn(record => record)
         };
-        create = createCreate(auth);
+        create = createCreate(() => auth);
     });
 
     it(`should be a function`, () => {
@@ -30,5 +30,13 @@ describe(`create`, () => {
         expect(auth.createUser.mock.calls.length).toBe(1);
         expect(auth.createUser.mock.calls[0][0]).toEqual(record);
         expect(result).toEqual(record);
+    });
+    it(`should pass the supplied tenant id to the loadAuth function`, async () => {
+        const tenantId = `test-tenant-id`;
+        const loadAuth = jest.fn(() => auth);
+        create = createCreate(loadAuth);
+        await create(undefined, { input: { tenantId } }, context);
+        expect(loadAuth.mock.calls.length).toBe(1);
+        expect(loadAuth.mock.calls[0][0]).toEqual(tenantId);
     });
 });
