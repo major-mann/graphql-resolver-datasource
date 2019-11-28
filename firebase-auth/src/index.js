@@ -30,7 +30,6 @@ async function createFirebaseAuthDatasource(serviceAccount, firebaseConfig) {
     const tenantManager = app.auth().tenantManager();
 
     const { apiKey } = await loadWebConfig(serviceAccount);
-    const loadAuth = tenantId => tenantManager.authForTenant(tenantId);
 
     const rest = createRestClient(apiKey);
     const authenticate = createAuthenticateHandler(rest);
@@ -85,6 +84,14 @@ async function createFirebaseAuthDatasource(serviceAccount, firebaseConfig) {
         }
         return result;
     }, {});
+
+    function loadAuth(tenantId) {
+        if (tenantId === undefined) {
+            return app.auth();
+        } else {
+            return tenantManager.authForTenant(tenantId);
+        }
+    }
 
     function statsWrap(name, resolver) {
         const beginStatName = `datasource.firebase-auth.${name}.begin`;
