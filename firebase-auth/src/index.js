@@ -11,6 +11,12 @@ const loadWebConfig = require(`./util/load-web-config.js`),
     createCreateTokenHandler = require(`./token/create-token.js`),
     createVerifyTokenHandler = require(`./token/verify-token.js`),
     createRevokeTokenHandler = require(`./token/revoke-token.js`),
+    createTenantFindHandler = require(`./tenant/find.js`),
+    createTenantListHandler = require(`./tenant/list.js`),
+    createTenantCreateHandler = require(`./tenant/create.js`),
+    createTenantUpdateHandler = require(`./tenant/update.js`),
+    createTenantUpsertHandler = require(`./tenant/upsert.js`),
+    createTenantDeleteHandler = require(`./tenant/delete.js`),
     createCreateHandler = require(`./user/create.js`),
     createUpsertHandler = require(`./user/upsert.js`),
     createUpdateHandler = require(`./user/update.js`),
@@ -37,10 +43,18 @@ async function createFirebaseAuthDatasource(serviceAccount, firebaseConfig) {
     const verifyToken = createVerifyTokenHandler(loadAuth, rest);
     const refreshIdToken = createRefreshIdTokenHandler(rest);
     const createToken = createCreateTokenHandler(serviceAccount, rest);
+
     const find = createFindHandler(loadAuth);
     const upsert = createUpsertHandler(loadAuth, find);
     const create = createCreateHandler(loadAuth, find, upsert);
     const update = createUpdateHandler(loadAuth, find, upsert);
+
+    const tenantFind = createTenantFindHandler(loadAuth);
+    const tenantList = createTenantListHandler(loadAuth);
+    const tenantCreate = createTenantCreateHandler(loadAuth);
+    const tenantUpdate = createTenantUpdateHandler(loadAuth);
+    const tenantUpsert = createTenantUpsertHandler(loadAuth);
+    const tenantDelete = createTenantDeleteHandler(loadAuth, tenantFind);
 
     const {
         generateSignIn,
@@ -59,6 +73,12 @@ async function createFirebaseAuthDatasource(serviceAccount, firebaseConfig) {
         update,
         upsert,
         dispose,
+        tenantFind,
+        tenantList,
+        tenantCreate,
+        tenantUpdate,
+        tenantUpsert,
+        tenantDelete,
         createToken,
         revokeToken,
         verifyToken,

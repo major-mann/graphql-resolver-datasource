@@ -40,7 +40,7 @@ function createUpsertHandler(loadAuth, find) {
         }
         const result = await find(
             source,
-            { input },
+            { input: args.input },
             context,
             info
         );

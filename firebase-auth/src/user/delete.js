@@ -19,13 +19,23 @@ function createDeleteHandler(loadAuth, find) {
     async function remove(source, args, context, info) {
         const user = await find(source, args, context, info);
         if (user) {
-            const auth = await loadAuth(args.input.tenantId);
-            await auth.deleteUser(user.uid);
+            await safeDeleteUser(user.uid);
             context.stat.increment(`datasource.firebase-auth.delete.found`);
             return plainUserObject(user);
         } else {
             context.stat.increment(`datasource.firebase-auth.delete.missing`);
             return undefined;
+        }
+
+        async function safeDeleteUser(uid) {
+            const auth = await loadAuth(args.input.tenantId);
+            try {
+                await auth.deleteUser(uid);
+            } catch (ex) {
+                if (ex.code !== `auth/user-not-found`) {
+                    throw ex;
+                }
+            }
         }
     }
 }
