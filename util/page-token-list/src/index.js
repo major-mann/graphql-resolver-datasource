@@ -2,9 +2,7 @@ module.exports = createPageTokenLister;
 
 const LIMIT = 200;
 
-const ConsumerError = require(`../consumer-error.js`);
-
-function createPageTokenLister({ sourceName, lookup, listHandler, convertOut }) {
+function createPageTokenLister({ sourceName, lookup, listHandler, convertOut, ConsumerError = Error }) {
     return async function list(source, args, context, info) {
         const { first, last, after, before, filter, order } = (args.input || {});
         if (first <= 0 || last <= 0) {
