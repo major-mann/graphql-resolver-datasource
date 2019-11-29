@@ -5,7 +5,7 @@ const LIMIT = 200;
 const ConsumerError = require(`../consumer-error.js`);
 
 function createPageTokenLister({ sourceName, lookup, listHandler, convertOut }) {
-    return async function list(source, args, context) {
+    return async function list(source, args, context, info) {
         const { first, last, after, before, filter, order } = (args.input || {});
         if (first <= 0 || last <= 0) {
             context.stat.gauge(`datasource.${sourceName}.list.count`, 0);
@@ -39,7 +39,7 @@ function createPageTokenLister({ sourceName, lookup, listHandler, convertOut }) 
             if (cursor && cursor.offset > 0) {
                 lim = lim + cursor.offset;
             }
-            const listResult = await listHandler(lim, cursor && cursor.list);
+            const listResult = await listHandler(lim, cursor && cursor.list, { source, args, context, info });
             let elements = [];
             listResult.data.forEach(user => elements.push(user));
             hasNextPage = elements.length >= lim && !!listResult.pageToken;
@@ -93,11 +93,11 @@ function createPageTokenLister({ sourceName, lookup, listHandler, convertOut }) 
             let current, users;
 
             if (cursor) {
-                users = [await lookup(cursor.field, cursor.value, args)]
+                users = [await lookup(cursor.field, cursor.value, { source, args, context, info })]
                     .filter(user => user);
             } else {
                 current = filter.shift();
-                users = [await lookup(current.field, current.value, args)]
+                users = [await lookup(current.field, current.value, { source, args, context, info })]
                     .filter(user => user);
             }
 
