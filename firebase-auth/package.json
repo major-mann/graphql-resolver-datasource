@@ -18,7 +18,7 @@
     },
     "dependencies": {
         "@major-mann/graphql-resolver-datasource-util-page-token-list": "0.0.4",
-        "bcrypt": "^3.0.7",
+        "bcrypt": "^5.0.0",
         "firebase-admin": "^8.8.0",
         "googleapis": "^45.0.0",
         "jest": "^24.9.0",
