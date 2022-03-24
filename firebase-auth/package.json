@@ -14,7 +14,7 @@
     "devDependencies": {
         "chalk": "^2.4.2",
         "jest": "",
-        "minimist": "^1.2.0"
+        "minimist": "^1.2.6"
     },
     "dependencies": {
         "@major-mann/graphql-resolver-datasource-util-page-token-list": "0.0.4",
